@@ -54,7 +54,8 @@
         <button class="btn primary" id="authSubmit" type="submit">Entrar</button>
       </form>
       <p class="hint"><a href="#" id="authMode">Criar minha conta</a></p>
-      <div id="authFeedback" class="feedback hidden"></div>
+      <div id="authFeedback" class="feedback hidden" role="status"></div>
+      <button id="authResend" class="btn hidden" type="button">Solicitar nova confirmação de e-mail</button>
     </div>
   </div>
   <div id="appPage" class="shell hidden">
@@ -105,6 +106,6 @@
       <div id="mainFeedback" class="feedback hidden"></div>
     </main>
   </div>
-  <script type="module" src="./app.mjs?v=private-session-2"></script>
+  <script type="module" src="./app.mjs?v=auth-flow-3"></script>
 </body>
 </html>
