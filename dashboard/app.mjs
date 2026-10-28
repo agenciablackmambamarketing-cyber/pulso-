@@ -1,4 +1,4 @@
-import { startConfiguredDashboard } from './config.mjs';
+import { startConfiguredDashboard } from './config.mjs?v=private-session-2';
 import {escapeHtml as esc, currencyAmount as money, selectCurrency, createRequestScope, metricForCurrency, validateMetrics} from './metrics.mjs';
 await startConfiguredDashboard({
  onError:message=>{document.getElementById('configFeedback').textContent=message;},

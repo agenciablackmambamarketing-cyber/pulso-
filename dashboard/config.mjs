@@ -21,17 +21,23 @@ export function validatePublicConfig(value) {
   return Object.freeze({...value});
 }
 export async function loadDashboardConfig(fetchImpl = fetch) {
-  const response = await fetchImpl('./config.json', {cache:'no-store',credentials:'omit',redirect:'error'});
+  const response = await fetchImpl('./config.json', {cache:'no-store',credentials:'same-origin',redirect:'error'});
   if (!response.ok) invalid();
   return validatePublicConfig(await response.json());
 }
 export async function startConfiguredDashboard({fetchImpl = fetch, onReady, onError}) {
+  let config;
   try {
-    const config = await loadDashboardConfig(fetchImpl);
+    config = await loadDashboardConfig(fetchImpl);
+  } catch {
+    onError('Não foi possível carregar a configuração do painel. Reabra o link com sua conta e tente novamente.');
+    return false;
+  }
+  try {
     await onReady(config);
     return true;
   } catch {
-    onError('Configuração do ambiente pendente. O painel não iniciou conexão com o Supabase.');
+    onError('A configuração foi carregada, mas o painel não conseguiu iniciar. Verifique sua conexão e recarregue a página.');
     return false;
   }
 }
