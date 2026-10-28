@@ -1,54 +1,24 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { createPulsoTracker } from '../tracker/pulso-tracker.mjs';
-
-const validId='8d7aab93-e833-4741-aa3f-2d024c7790aa';
-const opaqueToken='a'.repeat(32);
-function setup(consent=true, href='https://ingles.example.com/?utm_campaign=teste&fbclid=clique&email=sensitive%40email.com') {
-  const writes=[]; const store=new Map(); const requests=[]; let accepted=consent;
-  const sdk=createPulsoTracker({
-    collectorUrl:'https://pulso.example.com/functions/v1/pulso-collect',
-    publicSiteKey:'agency_english_2026', marketingAllowed:()=>accepted,
-    currentUrl:()=>href, cookieHeader:()=>'_fbp=fb.1.123.abc; _fbc=fb.1.123.clique; session=secret',
-    randomUUID:()=>validId,
-    sessionStorage:{getItem:k=>store.get(k),setItem:(k,v)=>{writes.push([k,v]);store.set(k,v);},removeItem:k=>store.delete(k)},
-    fetchImpl:async(url,opts)=>{requests.push({url,...opts});return {ok:true,json:async()=>({checkout_handoff_token:opaqueToken})};}
-  });
-  return {sdk,writes,requests,store,setConsent:v=>accepted=v};
+const opaqueToken='A'.repeat(30);
+function setup(consent=true,href='https://ingles.example.test/?utm_campaign=registered-campaign&fbclid=click&sck=existing-origin&xcod=affiliate&email=sensitive%40email.com'){
+ const writes=[],store=new Map(),requests=[];let accepted=consent,time=Date.now();
+ const sdk=createPulsoTracker({collectorUrl:'https://api.example.test/pulso-collect',publicSiteKey:'agency_english_2026',marketingAllowed:()=>accepted,consentRecord:()=>({marketing:accepted,basis:'consent',policy_version:'2026-10',captured_at:new Date(time).toISOString()}),currentUrl:()=>href,cookieHeader:()=>'_fbp=fb.1.123.abc; _fbc=fb.1.123.click; session=secret',now:()=>time,sessionStorage:{getItem:k=>store.get(k),setItem:(k,v)=>{writes.push([k,v]);store.set(k,v);},removeItem:k=>store.delete(k)},fetchImpl:async(url,opts)=>{requests.push({url,...opts});return {ok:true,json:async()=>({checkout_handoff_token:opaqueToken,resume_token:opaqueToken,expires_at:new Date(time+86400000).toISOString()})};}});
+ return {sdk,writes,requests,store,setConsent:v=>accepted=v,advance:ms=>time+=ms};
 }
-
-test('no consent: no network request and no marketing storage',async()=>{
-  const s=setup(false); const result=await s.sdk.track('page_view');
-  assert.equal(result.sent,false); assert.equal(s.requests.length,0);assert.equal(s.writes.length,0);
-  assert.equal(s.sdk.checkoutHref('https://pay.hotmart.com/X123?off=abc'),'https://pay.hotmart.com/X123?off=abc');
-});
-test('allowed fields only: never leak email or complete URL to collector',async()=>{
-  const s=setup(); const res=await s.sdk.track('page_view');
-  assert.equal(res.sent,true);
-  const payload=JSON.parse(s.requests[0].body);
-  assert.equal(payload.page_url,'https://ingles.example.com/');
-  assert.equal(payload.click.fbclid,'clique');
-  assert.equal(payload.click.utm_campaign,'teste');
-  assert.equal(payload.click.email,undefined);
-  assert.ok(!s.requests[0].body.includes('sensitive%40email.com'));
-  assert.ok(!s.requests[0].body.includes('session=secret'));
-  assert.equal(s.writes.length,1);
-});
-test('Hotmart checkout URL keeps existing affiliate/checkout params and never overwrites sck',async()=>{
-  const s=setup();await s.sdk.track('checkout_click');
-  const c=s.sdk.checkoutHref('https://pay.hotmart.com/X123?off=abc&utm_source=meta');
-  const u=new URL(c);assert.equal(u.searchParams.get('off'),'abc');assert.equal(u.searchParams.get('utm_source'),'meta');
-  assert.equal(u.searchParams.get('sck'),opaqueToken);
-  const old='https://pay.hotmart.com/X123?sck=existing';assert.equal(s.sdk.checkoutHref(old),old);
-  const outside='https://evil.example.com/buy';assert.equal(s.sdk.checkoutHref(outside),outside);
-});
-test('revoking consent blocks events and checkout decoration',async()=>{
-  const s=setup();await s.sdk.track('page_view');s.setConsent(false);
-  assert.equal((await s.sdk.track('view_content')).sent,false);
-  const href='https://pay.hotmart.com/X123';assert.equal(s.sdk.checkoutHref(href),href);
-  s.sdk.reset();assert.equal(s.store.size,0);
-});
-test('invalid URL and fake/small site keys rejected',async()=>{
-  assert.throws(()=>createPulsoTracker({collectorUrl:'http://thirdparty.example.com/collect',publicSiteKey:'abc',marketingAllowed:()=>true}),/HTTPS/);
-  const s=setup();await assert.rejects(s.sdk.track('purchase'),/Unsupported event/);
+test('no consent means no event/network/marketing storage',async()=>{const s=setup(false);assert.equal((await s.sdk.track('page_view')).sent,false);assert.equal(s.requests.length,0);assert.equal(s.writes.length,0);assert.equal(s.sdk.checkoutHref('https://pay.hotmart.com/X123'),'https://pay.hotmart.com/X123');});
+test('all allowlisted identifiers captured without leaking full URL or unrelated cookies',async()=>{const s=setup();assert.equal((await s.sdk.track('page_view')).sent,true);const p=JSON.parse(s.requests[0].body);assert.equal(p.page_url,'https://ingles.example.test/');assert.equal(p.click.sck,'existing-origin');assert.equal(p.click.xcod,'affiliate');assert.equal(p.click.email,undefined);assert.equal(p.public_session_id,undefined);assert.ok(!s.requests[0].body.includes('sensitive'));assert.ok(!s.requests[0].body.includes('session=secret'));assert.equal(p.consent.policy_version,'2026-10');});
+test('checkout keeps affiliate, sck, xcod and offer exactly; only absent sck is decorated',async()=>{const s=setup();await s.sdk.track('checkout_click');const c=new URL(s.sdk.checkoutHref('https://pay.hotmart.com/X123?off=abc&xcod=affiliate&utm_source=meta'));assert.equal(c.searchParams.get('off'),'abc');assert.equal(c.searchParams.get('xcod'),'affiliate');assert.equal(c.searchParams.get('sck'),opaqueToken);for(const old of ['https://pay.hotmart.com/X123?sck=existing','https://evil.test/buy','https://go.hotmart.com/A123?src=affiliate'])assert.equal(s.sdk.checkoutHref(old),old);});
+test('serialized sends resume signed session and do not infer checkout started from a click',async()=>{const s=setup();await Promise.all([s.sdk.track('page_view'),s.sdk.track('checkout_click')]);const p=s.requests.map(r=>JSON.parse(r.body));assert.equal(p[0].resume_token,undefined);assert.equal(p[1].resume_token,opaqueToken);assert.equal(p[1].event_name,'checkout_click');assert.equal(new URL(s.requests[0].url).searchParams.get('site_key'),'agency_english_2026');});
+test('revoking consent sends only deletion request, clears local token, blocks subsequent events',async()=>{const s=setup();await s.sdk.track('page_view');s.setConsent(false);assert.equal((await s.sdk.revokeConsent()).sent,true);assert.deepEqual(Object.keys(JSON.parse(s.requests[1].body)).sort(),['action','resume_token','site_key']);assert.equal(s.store.size,0);assert.equal((await s.sdk.track('view_content')).sent,false);assert.equal(s.requests.length,2);});
+test('expired resume cannot decorate checkout or be sent as active session',async()=>{const s=setup();await s.sdk.track('page_view');s.advance(86400001);assert.equal(s.sdk.checkoutHref('https://pay.hotmart.com/X123'),'https://pay.hotmart.com/X123');await s.sdk.track('page_view');assert.equal(JSON.parse(s.requests[1].body).resume_token,undefined);});
+test('secure endpoint, explicit consent record and supported browser events are required',async()=>{assert.throws(()=>createPulsoTracker({collectorUrl:'http://insecure.test',publicSiteKey:'agency_english_2026',marketingAllowed:()=>true}),/HTTPS/);assert.throws(()=>createPulsoTracker({collectorUrl:'https://api.test',publicSiteKey:'agency_english_2026',marketingAllowed:()=>true}),/consent record/);await assert.rejects(setup().sdk.track('purchase'),/Unsupported event/);});
+test('failed privacy deletion remains retryable and blocks further marketing until acknowledged',async()=>{
+ const store=new Map();let failRevoke=true,allowed=true;const requests=[];
+ const sdk=createPulsoTracker({collectorUrl:'https://api.test/collect',publicSiteKey:'test_site_12345',marketingAllowed:()=>allowed,consentRecord:()=>({marketing:true,basis:'consent',policy_version:'v1',captured_at:new Date().toISOString()}),currentUrl:()=>'https://sales.test/',cookieHeader:()=>'',sessionStorage:{getItem:k=>store.get(k),setItem:(k,v)=>store.set(k,v),removeItem:k=>store.delete(k)},fetchImpl:async(_,opts)=>{const b=JSON.parse(opts.body);requests.push(b);if(b.action==='revoke'&&failRevoke)throw new Error('offline');return {ok:true,json:async()=>({resume_token:opaqueToken,expires_at:new Date(Date.now()+86400000).toISOString()})};}});
+ await sdk.track('page_view');allowed=false;assert.equal((await sdk.revokeConsent()).pending,true);assert.equal([...store.keys()].some(k=>k.endsWith(':revoke')),true);
+ assert.equal(sdk.checkoutHref('https://pay.hotmart.com/X'),'https://pay.hotmart.com/X');
+ allowed=true;assert.equal((await sdk.track('view_content')).reason,'revocation_pending');assert.equal(requests.filter(x=>x.event_name).length,1);
+ failRevoke=false;assert.equal((await sdk.revokeConsent()).sent,true);assert.equal(store.size,0);
 });

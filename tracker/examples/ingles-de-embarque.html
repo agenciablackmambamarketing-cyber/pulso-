@@ -1,0 +1,26 @@
+<!doctype html>
+<html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Inglês de Embarque — laboratório de tracking</title><style>body{font:18px system-ui;max-width:780px;margin:40px auto;padding:20px;line-height:1.6;color:#181c22}button,a.cta{font:inherit;padding:12px 18px;margin:6px;background:#eef1f4;color:#181c22;border:1px solid #68737e;border-radius:6px;cursor:pointer}a.cta{display:inline-block}#preferences{border:1px solid #68737e;padding:24px;margin:32px 0}small{display:block}#status{min-height:60px}#offer{min-height:35vh}</style></head>
+<body><h1>Inglês de Embarque</h1><p>Laboratório de integração. Esta página não é a página de vendas original e não ativa campanhas reais.</p><p><strong>Configuração pendente:</strong> substitua os campos abaixo por um coletor de staging, site registrado e checkout de teste verificado.</p><p id="status" role="status">Nenhum evento de marketing enviado.</p><section id="preferences" aria-labelledby="preferences-title"><h2 id="preferences-title">Preferências de marketing</h2><p>Com sua permissão, este exemplo associa sua visita a uma compra de teste e pode usar os identificadores de campanha para correspondência publicitária. Você pode recusar e continuar.</p><button id="accept">Aceitar marketing</button><button id="reject">Recusar marketing</button><button id="revoke">Revogar consentimento</button><small>Exemplo técnico de preferências; a política final e a configuração da CMP precisam ser revisadas para sua operação.</small></section><section id="offer"><h2>Oferta de teste</h2><p>O evento ViewContent ocorre quando esta oferta entra na tela. O botão observa apenas o clique; não comprova o início do checkout externo.</p><a class="cta" id="checkout" href="#preferences">Abrir checkout de teste</a></section>
+<script type="module">
+import { createPulsoTracker } from '../pulso-tracker.mjs';
+// Configure ONLY isolated staging. Never paste any Hottok or Meta token here.
+const config={collectorUrl:'https://REPLACE_STAGING_PROJECT.supabase.co/functions/v1/pulso-collect',publicSiteKey:'REPLACE_REGISTERED_SITE_KEY',checkoutURL:'https://pay.hotmart.com/REPLACE_VERIFIED_TEST_PRODUCT',policyVersion:'REPLACE_REVIEWED_POLICY_VERSION'};
+const configured=Object.values(config).every(value=>!value.includes('REPLACE'));
+const status=document.querySelector('#status');
+const preferenceKey='pulso:example:consent'; // necessary preference record, no advertising identifier
+let preference=null;try{preference=JSON.parse(localStorage.getItem(preferenceKey)||'null');}catch{}
+const allowed=()=>preference?.marketing===true&&preference.policy_version===config.policyVersion;
+const tracker=configured?createPulsoTracker({...config,marketingAllowed:allowed,consentRecord:()=>preference}):null;
+let viewed=false,visit=false;
+const save=marketing=>{preference={marketing,basis:'consent',policy_version:config.policyVersion,captured_at:new Date().toISOString()};try{localStorage.setItem(preferenceKey,JSON.stringify(preference));}catch{}};
+async function sendVisit(){if(!tracker||!allowed()||visit)return;const result=await tracker.track('page_view');visit=result.sent;status.textContent=result.sent?'PageView aceito pelo coletor de staging.':'Coleta indisponível; confira a configuração de staging.';if(visit&&viewed)await tracker.track('view_content');}
+document.querySelector('#accept').addEventListener('click',async()=>{save(true);if(!configured){status.textContent='Preferência aceita localmente. Nenhuma coleta: configuração de staging ainda pendente.';return;}await sendVisit();});
+async function refuse(){save(false);visit=false;const result=await tracker?.revokeConsent();status.textContent=result?.pending?'Revogação pendente de conexão. Nenhum novo evento será enviado; use Revogar consentimento novamente quando estiver online.':'Marketing bloqueado; preferências salvas. A revogação recebida pelo backend impede novos envios da sessão.';}
+document.querySelector('#reject').addEventListener('click',refuse);
+document.querySelector('#revoke').addEventListener('click',refuse);
+new IntersectionObserver(async entries=>{if(entries.some(e=>e.isIntersecting)&&!viewed){viewed=true;if(visit&&allowed())await tracker?.track('view_content');}},{threshold:.5}).observe(document.querySelector('#offer'));
+document.querySelector('#checkout').addEventListener('click',async event=>{event.preventDefault();if(!configured){status.textContent='Checkout bloqueado no laboratório até configurar um produto e checkout de teste verificados.';return;}const url=new URL(config.checkoutURL);if(url.protocol!=='https:'||url.hostname!=='pay.hotmart.com'){status.textContent='Checkout de teste inválido.';return;}if(allowed())await tracker.track('checkout_click');if(url.searchParams.has('sck'))status.textContent='SCK existente preservado. Este checkout pode não permitir associação à sessão Pulso; nenhum parâmetro de afiliado foi alterado.';window.location.assign(tracker.checkoutHref(url.href));});
+// On version change, remove any old marketing session before recording new visits.
+if(tracker&&preference?.policy_version!==config.policyVersion)tracker.revokeConsent().then(result=>{if(result.pending)status.textContent='Revogação da política anterior pendente de conexão.';});
+if(configured&&allowed())sendVisit();
+</script></body></html>

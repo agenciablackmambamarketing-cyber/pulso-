@@ -15,6 +15,9 @@ node_modules/
 *.log
 *.sqlite
 *.db
+supabase/.temp/
+supabase/.branches/
+coverage/
 # Deployment artifacts
 *.zip
 dist/

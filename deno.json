@@ -1,0 +1,7 @@
+{
+  "nodeModulesDir": "auto",
+  "lock": { "path": "deno.lock" },
+  "tasks": {
+    "check": "deno check supabase/functions/pulso-collect/index.ts supabase/functions/hotmart-webhook/index.ts supabase/functions/hotmart-connect/index.ts supabase/functions/meta-connect/index.ts supabase/functions/meta-worker/index.ts"
+  }
+}

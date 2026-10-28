@@ -1,45 +1,59 @@
-# Pulso Campanhas 2.0 — Hotmart-first
+# Pulso Campanhas — tracking first-party e Hotmart
 
-This is the standalone, deployable **Pulso v2** dashboard and Supabase backend sources.
+Implementação revisável do P0 da [issue #2](https://github.com/agenciablackmambamarketing-cyber/pulso-/issues/2), incorporando e ampliando o SDK da [PR #1](https://github.com/agenciablackmambamarketing-cyber/pulso-/pull/1). **As alterações desta branch não estão implantadas. Meta opera exclusivamente com Test Events; ativação de conversões de produção não está disponível nesta entrega.**
 
-## Live backend status (25 Oct 2026)
+## Fluxo implementado
 
-- Supabase project: `nlrhtioxsbncpluchfcz`, São Paulo. It is not the charutaria project.
-- Initial schema and two secure ingestion functions **deployed**.
-- Webhook endpoint **deployed**: `https://nlrhtioxsbncpluchfcz.supabase.co/functions/v1/hotmart-webhook` (POST; Hotmart Webhook 2.0).
-- User-initiated source registration endpoint **deployed**: `https://nlrhtioxsbncpluchfcz.supabase.co/functions/v1/hotmart-connect` (POST; authenticated user bearer token).
-- Database test **passed**: purchase approved, duplicate rejected, refund, terminal status cannot regress, one notification, buyer email not persisted; transaction rolled back.
-- No actual Hotmart account has been connected yet. No sales, integrations, or tracking data were added.
+```mermaid
+flowchart LR
+  A[Meta Ads] --> B[Página + CMP + SDK]
+  B --> C[Coletor: origem + consentimento + limites]
+  C --> D[Supabase: sessão e handoff privado]
+  B -->|sck assinado sem sobrescrever afiliado| E[Checkout Hotmart]
+  E -->|webhook Hottok| F[Ingestão transacional]
+  D --> F
+  F --> G[Venda + atribuição + outbox privada]
+  G --> H[Worker: lease + retry + Meta Test Events]
+  G --> I[Agregados com RLS]
+  H --> I
+  I --> J[Dashboard por workspace]
+```
 
-## Dashboard
+- SDK sem dependências, opt-in: `page_view`, `view_content`, `checkout_click`, `checkout_started` somente quando observado. Não inventa início de checkout a partir de clique nem Purchase no navegador.
+- Coletor com corpo limitado a 16 KiB por bytes, site/origem exatos, consentimento versionado, schema allowlist, limites atômicos no banco e retomada por token assinado. O navegador não escolhe workspace, sessão de banco ou dataset.
+- `sck` opaco com 30 caracteres, HMAC e validade registrada no servidor; UTMs, `src/sck/xcod`, Meta, Google e Taboola permanecem no processamento privado. Parâmetros de afiliado e `sck` existente são preservados; conflito implica ausência de vínculo Pulso, sem atribuição por adivinhação.
+- Hottok em digest SHA-256; aprovação, deduplicação, atribuição e outbox na mesma transação. Reembolso/chargeback não são revertidos por aprovação atrasada; transações e moedas preservadas, sem somar moedas diferentes.
+- Credencial CAPI por workspace/dataset criptografada AES-256-GCM com AAD; chave somente em Edge secrets. Validação de acesso ao dataset via GET, envio de Purchase somente confirmado e consentido, exclusivamente com `test_event_code`.
+- Outbox com lease, fencing, backoff, limite de oito tentativas, reprocessamento condicionado e event_id estável. Resposta `events_received=1` é necessária para marcar aceitação. Aceitação não prova atribuição de anúncio.
+- Dashboard com métricas reais e agregadas, saúde, origens conhecidas, diagnósticos CAPI e configuração administrativa. Falhas de consulta aparecem como indisponibilidade. Não busca dados de comprador, matching, IDs de clique, transações ou payloads brutos.
 
-The `dashboard/index.html` file is a standalone static authenticated dashboard built using Supabase JS. It displays *real records only* and supports:
-- Email/password signup and login (email confirmation may be required).
-- Creating an isolated workspace for the agency.
-- Currency filtering and different time windows.
-- Approved gross revenue, refunds, unattributed purchases, order history, tracking diagnostics.
-- Securely registering your Hotmart account by typing the Hottok into the app, not ChatGPT.
-- Checking pending vs connected Hotmart status.
-- Explicit "not connected" indicators for Meta/Google, ROAS and profit.
+## Banco existente e auditoria
 
-The dashboard is **not** published over the original `pulso-campanhas.fersthome.chatgpt.site` address; that site is a different prototype and may still show demo data. Host the contents of `dashboard/` on a static HTTPS site to use this version. Use the existing Supabase publishable (public) key in this file; never include service/secret keys in the browser.
+O projeto de produção `nlrhtioxsbncpluchfcz` foi inspecionado **somente em leitura**, incluindo 12 migrações, 21 tabelas com RLS, funções, grants, políticas e fontes de duas Edge Functions. [Auditoria e revisão da PR #1](docs/AUDIT_TRACKING.md).
 
-## Connecting Hotmart
+O SQL legado `20261025_pulso_core.sql` é parcial. **Não execute `supabase db push/reset` contra o projeto existente para sincronizar esta branch. Não reaplique SQL antigo nem simule o histórico das 12 migrações.** O [baseline observado](supabase/baseline/README.md) é apenas para banco novo isolado, não uma migração de produção. As quatro novas migrações são incrementais e precisam de revisão e aplicação ordenada em staging.
 
-1. Open the published v2 dashboard on HTTPS, sign up/sign in and create workspace.
-2. Open **Integrações**, enter your Hotmart **Hottok** into the password field and save. The backend stores its SHA-256 digest, not plaintext.
-3. In Hotmart's **Webhook**, add the webhook URL above, select **Webhook 2.0.0** with purchase-approved, complete, refunded, chargeback, cancelled, expired/delayed events.
-4. Use the Hotmart Webhook settings' test action to POST a real test notification. Status becomes connected only after the first valid event. Hotmart sample notifications may have placeholder data; never treat a test as production revenue until verified.
-5. Reconcile actual sales via API after OAuth credentials are available.
+## Desenvolvimento e testes
 
-## SQL and security
+Requer Node >=22, npm e PostgreSQL 17 com pgcrypto. Dependências de teste fixadas em `package-lock.json`; runtime Supabase e tipos fixados em `deno.lock`.
 
-`supabase/migrations/20261025_pulso_core.sql` is the initial migration; `20261025_hotmart_connection_status.sql` updates integration status logic. Schema-creating operations were applied to the backend in several live migration calls. Existing private tables from the earlier project have RLS warnings in the schema inspection: access to private schema was revoked from anon/authenticated; formal RLS policy review and testing is still advisable before broader production rollout.
+```sh
+npm ci --ignore-scripts
+npm test
+# Somente uma instância descartável local, com permissão de criar bancos:
+PULSO_TEST_DATABASE_URL=postgres://postgres@127.0.0.1:55432/postgres npm run test:db
+# Deno 2.9.6:
+deno task check
+```
 
-Use server-side keys only in Supabase Edge Functions. The public frontend uses Supabase Auth session access tokens for `hotmart-connect`. No Facebook passwords are used.
+`test:db` cria um banco temporário aleatório, carrega o baseline, aplica as novas migrações e remove somente esse banco ao terminar. Recusa host fora de loopback e não lê credenciais Supabase. Os stubs locais de Auth permitem testar RLS/RPCs, mas não equivalem a executar o gateway Auth/PostgREST hospedado. O fluxo integrado usa PostgreSQL real e resposta Meta simulada; não comprova recepção externa. [Relatório de verificação](docs/VERIFICATION.md).
 
-## Remaining work
+## Operação e próximos passos
 
-- Deploy the v2 dashboard to HTTPS and verify browser login/connection end-to-end.
-- Configure Hotmart Hottok through the app and send a real Hotmart test event.
-- Implement Hotmart API history reconciliation, tracking script + checkout propagation, exchange-rate ledger, Meta OAuth, Google Ads, app push and daily closing.
+- [Deploy, configuração e rollback](docs/DEPLOY_TRACKING.md)
+- [Consentimento, matriz de dados e retenção](docs/PRIVACY_TRACKING.md)
+- [Meta CAPI e contratos](docs/META_CAPI.md)
+- [Checklist Inglês de Embarque e E2E de staging](docs/INGLES_DE_EMBARQUE_ACTIVATION.md)
+- [SDK e exemplo isolado](tracker/README.md)
+
+Nenhum token deve ser enviado em chat ou commit. Use o formulário administrativo autorizado e o gerenciador de segredos. Google Ads/Taboola mantêm os identificadores e a fronteira de adaptadores; uploads, OAuth, custos e reconciliação dessas plataformas permanecem pendentes.
