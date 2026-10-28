@@ -1,0 +1,75 @@
+{
+  "environment": "staging",
+  "project_ref": "osgumasejgumqlnqxcvm",
+  "runtime_store": "Supabase Vault",
+  "runtime_settings_count": 7,
+  "secret_values_exported": false,
+  "checks": [
+    {
+      "name": "authenticated_runtime_rpc_denied",
+      "http_status": 403
+    },
+    {
+      "name": "owner_hotmart_connect_synthetic_source",
+      "http_status": 200
+    },
+    {
+      "name": "consented_pageview_and_signed_handoff",
+      "http_status": 200
+    },
+    {
+      "name": "synthetic_purchase_approved",
+      "http_status": 200,
+      "accepted": true
+    },
+    {
+      "name": "duplicate_purchase_deduplicated",
+      "http_status": 200,
+      "duplicate": true
+    },
+    {
+      "name": "dashboard_purchase_attributed",
+      "http_status": 200,
+      "approved_orders": 1,
+      "attributed_orders": 1,
+      "currency": "BRL",
+      "synthetic_value": 19.9
+    },
+    {
+      "name": "synthetic_refund_accepted",
+      "http_status": 200,
+      "accepted": true
+    },
+    {
+      "name": "late_approval_not_accepted",
+      "http_status": 200,
+      "accepted": false
+    },
+    {
+      "name": "consent_revocation_accepted",
+      "http_status": 200
+    },
+    {
+      "name": "revoked_resume_denied",
+      "http_status": 403
+    },
+    {
+      "name": "meta_configuration_requires_auth",
+      "http_status": 401
+    }
+  ],
+  "final_sale_status_before_cleanup": "REFUNDED",
+  "meta_outbox_count": 0,
+  "meta_requests_sent": 0,
+  "fixture_cleanup": {
+    "workspaces_remaining": 0,
+    "sales_remaining": 0,
+    "hotmart_sources_remaining": 0,
+    "runtime_settings_retained": 7
+  },
+  "limits": [
+    "Hotmart payloads were synthetic HTTP test requests, not originated by Hotmart.",
+    "No dataset/token CAPI/test_event_code from agency available.",
+    "No proof of Hotmart checkout sck echo or Meta Test Events acceptance."
+  ]
+}

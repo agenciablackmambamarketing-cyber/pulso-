@@ -1,6 +1,6 @@
 # Pulso Campanhas — tracking first-party e Hotmart
 
-Implementação revisável do P0 da [issue #2](https://github.com/agenciablackmambamarketing-cyber/pulso-/issues/2), incorporando e ampliando o SDK da [PR #1](https://github.com/agenciablackmambamarketing-cyber/pulso-/pull/1). **As alterações estão implantadas somente no staging isolado; produção permanece inalterada. Os endpoints de coleta/envio aguardam segredos e credenciais de teste. Meta opera exclusivamente com Test Events; ativação de conversões de produção não está disponível nesta entrega.**
+Implementação revisável do P0 da [issue #2](https://github.com/agenciablackmambamarketing-cyber/pulso-/issues/2), incorporando e ampliando o SDK da [PR #1](https://github.com/agenciablackmambamarketing-cyber/pulso-/pull/1). **As alterações estão implantadas somente no staging isolado; produção permanece inalterada. O runtime interno já foi configurado no Vault; credenciais reais de Hotmart/Meta e aceitação externa ainda estão pendentes. Meta opera exclusivamente com Test Events; ativação de conversões de produção não está disponível nesta entrega.**
 
 ## Fluxo implementado
 

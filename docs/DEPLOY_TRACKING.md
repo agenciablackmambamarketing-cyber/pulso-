@@ -19,6 +19,8 @@ Nenhum SQL ou função desta branch foi aplicado em produção. Em 28/10/2026, b
 
 ## Configuração Edge
 
+**Atualização de staging:** as sete configurações de runtime foram provisionadas via Supabase Vault, com RPC apenas service_role e escopos fixos. Consulte VAULT_RUNTIME.md. Environment completo continua suportado, mas preenchimento parcial é recusado; não misture fontes. Essa migração e os wrappers novos não foram aplicados em produção.
+
 Lista de nomes em `.env.example`. O runtime normalmente fornece `SUPABASE_URL` e `SUPABASE_SECRET_KEYS`/`SUPABASE_SERVICE_ROLE_KEY`, e publicáveis para `getUser` (`SUPABASE_PUBLISHABLE_KEYS`/`SUPABASE_ANON_KEY`). **Secret/service_role jamais no dashboard**.
 
 Configurar por projeto via Supabase secret management, sem valores em argumentos de shell, Git, logs ou chat:

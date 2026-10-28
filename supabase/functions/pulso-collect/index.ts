@@ -1,12 +1,13 @@
-import "jsr:@supabase/functions-js@2.118.0/edge-runtime.d.ts";
-import { createClient } from "npm:@supabase/supabase-js@2.95.0";
-import { createCollector } from "../_shared/collector.mjs";
-const secret=()=>JSON.parse(Deno.env.get('SUPABASE_SECRET_KEYS')||'{}').default||Deno.env.get('SUPABASE_SERVICE_ROLE_KEY');
-Deno.serve(async(req:Request)=>{
- try {
-  const url=Deno.env.get('SUPABASE_URL'),key=secret(),handoffKey=Deno.env.get('PULSO_HANDOFF_HMAC_KEY');
-  if(!url||!key||!handoffKey||handoffKey.length<32)return new Response(JSON.stringify({error:'collector_unavailable'}),{status:503,headers:{'Content-Type':'application/json'}});
-  const client=createClient(url,key,{auth:{persistSession:false,autoRefreshToken:false}});
-  return await createCollector({handoffKey,ipHashKey:Deno.env.get('PULSO_RATE_HASH_KEY'),trustedIPHeader:Deno.env.get('PULSO_TRUSTED_IP_HEADER')||'',rpc:async(name:string,args:Record<string,unknown>)=>{const {data,error}=await client.rpc(name,args);if(error)throw new Error(error.message);return data;}})(req);
- }catch{return new Response(JSON.stringify({error:'collector_unavailable'}),{status:503,headers:{'Content-Type':'application/json'}});}
+import {createClient} from "npm:@supabase/supabase-js@2.95.0";
+import {createCollector} from "../_shared/collector.mjs";
+import {loadRuntimeConfig,supabaseRuntimeKey,collectorDatabaseError} from "../_shared/runtime-config.mjs";
+Deno.serve(async(request:Request)=>{
+ try{
+  const getEnv=(name:string)=>Deno.env.get(name),url=getEnv('SUPABASE_URL');
+  if(!url)throw new Error('configuration');
+  const admin=createClient(url,supabaseRuntimeKey(getEnv,'secret'),{auth:{persistSession:false,autoRefreshToken:false}});
+  const rpc=async(name:string,args:Record<string,unknown>)=>{const {data,error}=await admin.rpc(name,args);if(error)throw collectorDatabaseError(error);return data;};
+  const config=await loadRuntimeConfig('collector',{getEnv,rpc});
+  return createCollector({handoffKey:config.PULSO_HANDOFF_HMAC_KEY,ipHashKey:config.PULSO_RATE_HASH_KEY,trustedIPHeader:getEnv('PULSO_TRUSTED_IP_HEADER')||'',rpc})(request);
+ }catch{return new Response('{"error":"collector_unavailable"}',{status:503,headers:{'Content-Type':'application/json','Cache-Control':'no-store'}});}
 });

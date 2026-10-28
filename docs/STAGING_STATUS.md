@@ -18,20 +18,21 @@ O fluxo Auth + PostgREST hospedado foi testado com duas contas sintéticas tempo
 
 Security advisor: INFO em dez tabelas privadas com RLS e sem policies (deny-all intencional) e WARN de SECURITY DEFINER em `configure_tracking_site`, cuja verificação `auth.uid()` + owner/admin foi testada pelo gateway, inclusive negação cross-tenant. Remediação/referência: https://supabase.com/docs/guides/database/database-linter?lint=0029_authenticated_security_definer_function_executable . Nenhum aviso deve ser interpretado como prova geral de ausência de vulnerabilidades.
 
-## Configuração que ainda falta
+## Configuração interna concluída via Vault
 
-A ferramenta Supabase conectada permite schema e deploy, mas não fornece uma operação para cadastrar Edge secrets; o ambiente executor não tem credencial Management API configurada. Não usar SQL para burlar esse limite nem colocar master keys no frontend. É necessário configurar, exclusivamente no projeto staging, em **Edge Functions → Secrets**:
+Sete configurações de servidor foram provisionadas no Supabase Vault, sem revelar valores. As cinco funções consomem configuração completa de environment ou Vault; nenhum navegador pode ler o Vault ou executar a RPC de configuração. Ver [VAULT_RUNTIME.md](VAULT_RUNTIME.md) para escopo, migração, precedência, rotação e limitação de deploy futuro.
 
-- `PULSO_HANDOFF_HMAC_KEY`: segredo aleatório >=32 caracteres.
-- `PULSO_RATE_HASH_KEY`: outro segredo independente.
-- `PULSO_META_CREDENTIAL_KEY_V1`: base64 de32 bytes aleatórios.
-- `PULSO_META_WORKER_SECRET`: segredo aleatório >=32 caracteres.
-- `PULSO_ADMIN_ORIGINS` e `PULSO_DASHBOARD_ORIGINS`: `https://pulso-campanhas-staging.fersthome.chatgpt.site`.
-- `META_GRAPH_VERSION`: versão suportada confirmada na documentação oficial Meta.
-- `PULSO_TRUSTED_IP_HEADER`: deixar ausente; não habilitar sem verificar o ingress.
+O coletor e hotmart-connect agora funcionam no staging. O teste hospedado usou uma fonte Hotmart sintética, requisições HTTP diretas e um produto sintético: PageView200, handoff assinado, cadastro autenticado da fonte200, compra aprovada200, repetição deduplicada, dashboard com uma compra atribuída de19,90 BRL, reembolso aceito, aprovação atrasada recusada, revogação aceita e replay negado403. Isso não prova que a Hotmart devolve sck em um checkout real, porque o provedor não originou essas chamadas. Não houve envio à Meta; nenhum destino CAPI estava cadastrado e a outbox ficou vazia.
 
-Não cole valores no chat. Use o gerenciador de segredos e mantenha backup seguro da chave AES. URL direta: https://supabase.com/dashboard/project/osgumasejgumqlnqxcvm/functions/secrets . Depois, criar usuário/workspace de teste no painel e cadastrar Hottok de teste + dataset/token CAPI/test_event_code nos formulários protegidos. O cadastro/login interativo e a confirmação de e-mail do usuário real ainda não foram verificados visualmente.
+Nesta revisão passaram71 testes Node,44 testes PostgreSQL local e Deno para cinco wrappers. A revisão independente testou permissões e escopo do Vault; não confundiu a view falsa local com criptografia real.
 
-O coletor retorna503 enquanto faltar HMAC; o worker retorna401 sem segredo. Esse bloqueio foi verificado, não é entrega de conversão. Nenhum evento foi enviado à Meta/Hotmart nesta etapa. Nenhuma conta real de comprador foi utilizada. Meta permanece exclusivamente test-only.
+## Próxima ação necessária da agência
 
-Após configurar: registrar site/origem, executar o checklist `INGLES_DE_EMBARQUE_ACTIVATION.md`, provar echo sck em teste Hotmart e confirmar Purchase no Meta Test Events do dataset certo. Scheduler/retention, página real e conectores Google/Taboola permanecem pendentes. Não há autorização de produção implícita.
+No [painel privado de staging](https://pulso-campanhas-staging.fersthome.chatgpt.site), criar/entrar na conta e criar workspace. Em Integrações, cadastrar:
+
+1. Hottok de uma conexão de teste autorizada Hotmart; depois configurar webhook2.0 para o endpoint staging.
+2. Pixel/Dataset ID autorizado, token CAPI e código Test Events da Meta, pelos campos protegidos.
+
+Não cole credenciais no chat. As chaves internas de runtime não precisam mais ser cadastradas manualmente em Edge Secrets para este staging. Não configurar valores parciais em environment enquanto usa Vault.
+
+Sem essas credenciais não é possível comprovar recepção externa, dedupe da Meta ou echo sck de checkout real. As fixtures sintéticas foram removidas: zero workspaces, vendas e fontes Hotmart; sete configurações de runtime preservadas. Evidência sanitizada em `backend-audit/staging-vault-pipeline-checks.json`. Nenhuma conversão real foi enviada. Scheduler/retention e fonte da página real permanecem pendentes. Produção inalterada e sem autorização implícita.
