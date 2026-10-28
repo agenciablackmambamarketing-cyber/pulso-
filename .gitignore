@@ -1,0 +1,21 @@
+# Secrets, credentials and local state
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*.p12
+*.pfx
+secrets.json
+credentials.json
+.netlify/
+.supabase/
+node_modules/
+.DS_Store
+*.log
+*.sqlite
+*.db
+# Deployment artifacts
+*.zip
+dist/
+build/

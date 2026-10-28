@@ -1,0 +1,199 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Pulso Campanhas — Inteligência de performance</title>
+  <meta name="theme-color" content="#0b0f17" />
+  <style>
+    :root{color-scheme:dark;--bg:#090c13;--panel:#121823;--raised:#1a2230;--line:#293141;--text:#f0f4fa;--muted:#8997ac;--aqua:#58ead8;--blue:#7ca7ff;--yellow:#e9b967;--red:#ee8291;--shadow:0 12px 48px #0003}
+    *{box-sizing:border-box} body{margin:0;background:var(--bg);font:14px/1.55 Inter,ui-sans-serif,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;color:var(--text)}
+    button,input,select{font:inherit} button{cursor:pointer} .hidden{display:none!important} a{color:var(--aqua)}
+    .shell{display:grid;grid-template-columns:224px minmax(0,1fr);min-height:100vh}
+    .sidebar{background:#0e131c;border-right:1px solid var(--line);padding:26px 18px;display:flex;flex-direction:column;gap:26px}
+    .logo{display:flex;align-items:center;gap:11px;padding:0 8px;font-size:17px;font-weight:800;letter-spacing:-.6px}
+    .mark{display:grid;place-items:center;background:linear-gradient(140deg,#53eed6,#609dfa);border-radius:11px;color:#09131d;font-weight:900;width:36px;height:36px;font-size:24px}
+    .nav{display:grid;gap:8px}.nav button{border:0;background:transparent;color:var(--muted);display:flex;align-items:center;gap:12px;text-align:left;padding:13px;border-radius:11px}
+    .nav button.active,.nav button:hover{background:#1a2530;color:var(--text)} .sidebar small{color:var(--muted)} .grow{flex:1}
+    main{min-width:0;padding:26px clamp(18px,3.4vw,52px) 48px;max-width:1600px;width:100%;margin:0 auto}
+    .top{display:flex;justify-content:space-between;align-items:center;gap:14px;border-bottom:1px solid var(--line);padding-bottom:24px;margin-bottom:32px}
+    h1,h2,h3,p{margin:0}h1{font-size:clamp(25px,2.6vw,35px);letter-spacing:-1px;line-height:1.23}h2{font-size:17px;letter-spacing:-.2px}h3{font-size:15px}
+    .sub{color:var(--muted);font-size:13px;margin-top:5px}.kicker{color:var(--aqua);font-weight:700;letter-spacing:.12em;text-transform:uppercase;font-size:10px;margin-bottom:12px}
+    .controls{display:flex;gap:8px;align-items:center;flex-wrap:wrap}.btn,.chip,.input{border:1px solid var(--line);background:#171f2a;color:var(--text);border-radius:10px;padding:10px 13px}
+    .btn.primary{background:var(--aqua);border-color:var(--aqua);color:#0b1820;font-weight:800}.btn:disabled{opacity:.5;cursor:not-allowed}
+    .chip.active{border-color:var(--aqua);background:#183733;color:var(--aqua)} select{max-width:260px}.grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px}
+    .card{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:21px;box-shadow:var(--shadow)}.metric .name{display:flex;justify-content:space-between;gap:8px;color:var(--muted);font-size:12px}
+    .metric .value{font-size:clamp(22px,2.2vw,32px);font-weight:780;letter-spacing:-1.2px;margin:16px 0 6px;white-space:nowrap}.metric .foot{color:var(--muted);font-size:11px}
+    .cols{display:grid;grid-template-columns:minmax(0,1.6fr) minmax(280px,1fr);gap:16px;margin-top:16px}.cardheader{display:flex;justify-content:space-between;align-items:flex-start;gap:8px;margin-bottom:22px}
+    .pill{font-size:11px;padding:4px 9px;border-radius:100px;border:1px solid var(--line);color:var(--muted)}.pill.good{border-color:#366359;background:#15352e;color:var(--aqua)}
+    .chart{height:230px;display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:12px;align-items:end;border-bottom:1px solid var(--line);padding:0 0 7px}
+    .barcol{min-width:0;display:flex;flex-direction:column;align-items:center;justify-content:end;gap:10px;height:100%}.bar{min-height:3px;width:min(36px,70%);border-radius:7px 7px 2px 2px;background:linear-gradient(#6eeedd,#388c97)}.barlabel{font-size:10px;color:var(--muted)}
+    .empty{color:var(--muted);border:1px dashed #334258;border-radius:11px;display:grid;place-items:center;padding:24px;min-height:100px;text-align:center}
+    .status{display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid var(--line);padding:15px 0;gap:15px}.status:last-child{border-bottom:0}.status p{font-size:12px;color:var(--muted)}
+    .dot{height:8px;width:8px;border-radius:50%;background:var(--muted);display:inline-block;margin-right:6px}.dot.on{background:var(--aqua)}.dot.warn{background:var(--yellow)}
+    table{border-collapse:collapse;width:100%;font-size:12px;min-width:550px} th{text-align:left;font-weight:500;color:var(--muted);border-bottom:1px solid var(--line);padding:10px 8px}td{padding:14px 8px;border-bottom:1px solid #222c38}td:last-child,th:last-child{text-align:right}.table-scroll{overflow:auto}
+    .notice{color:var(--muted);background:#131e29;border:1px solid #314253;padding:13px 16px;border-radius:12px;font-size:12px}.form{display:grid;gap:12px}.input{width:100%;outline:0}.input:focus{border-color:var(--aqua)}.form label{font-size:12px;color:var(--muted)}
+    .auth-wrap{min-height:100vh;display:grid;place-items:center;padding:16px;background:radial-gradient(700px 400px at 80% 10%,#15333755,transparent),var(--bg)}
+    .auth-card{width:min(440px,100%);background:var(--panel);border:1px solid var(--line);border-radius:23px;padding:32px;box-shadow:var(--shadow)}
+    .auth-card h1{font-size:27px;margin:16px 0 7px}.auth-card .form{margin-top:25px}.hint{margin-top:14px;color:var(--muted);font-size:12px}.feedback{padding:10px 14px;border-radius:10px;background:#32232b;color:#ffbec7;margin-top:12px;font-size:12px;word-break:break-word}
+    .feedback.ok{background:#19342f;color:var(--aqua)}.split{display:flex;justify-content:space-between;align-items:center;gap:14px;flex-wrap:wrap}.section{margin-top:29px}.note{font-size:12px;color:var(--muted)}.code{font-family:ui-monospace,monospace;font-size:11px;overflow-wrap:anywhere;color:var(--aqua);border:1px solid var(--line);background:#0b121b;padding:12px;border-radius:9px}
+    @media(max-width:1100px){.grid{grid-template-columns:repeat(2,minmax(0,1fr))}.cols{grid-template-columns:1fr}}
+    @media(max-width:700px){.shell{display:block}.sidebar{padding:12px;display:block;border-bottom:1px solid var(--line);border-right:0}.sidebar .grow,.sidebar small{display:none}.logo{margin-bottom:10px}.nav{display:flex;gap:5px;overflow:auto}.nav button{white-space:nowrap;padding:9px}.top{display:block}.top .controls{margin-top:18px}.grid{gap:9px}.card{padding:15px}.metric .value{font-size:22px}main{padding:22px 13px 40px}}
+  </style>
+</head>
+<body>
+  <div id="authPage" class="auth-wrap">
+    <div class="auth-card">
+      <div class="logo" style="padding:0"><div class="mark">⌁</div> Pulso Campanhas</div>
+      <h1 id="authTitle">Entrar na operação</h1>
+      <p class="sub">Dados reais, decisões melhores. Acesse seu painel de performance.</p>
+      <form id="authForm" class="form">
+        <label>E-mail<input id="email" type="email" class="input" placeholder="seu@email.com" autocomplete="email" required></label>
+        <label>Senha<input id="password" type="password" minlength="8" class="input" placeholder="Mínimo 8 caracteres" autocomplete="current-password" required></label>
+        <button class="btn primary" id="authSubmit" type="submit">Entrar</button>
+      </form>
+      <p class="hint"><a href="#" id="authMode">Criar minha conta</a></p>
+      <div id="authFeedback" class="feedback hidden"></div>
+    </div>
+  </div>
+  <div id="appPage" class="shell hidden">
+    <aside class="sidebar"><div class="logo"><div class="mark">⌁</div>Pulso <span style="color:var(--muted);font-weight:400">Campanhas</span></div>
+      <nav class="nav" aria-label="Navegação">
+        <button data-tab="overview" class="active">▦ &nbsp;Visão geral</button>
+        <button data-tab="sales">◇ &nbsp;Vendas</button>
+        <button data-tab="integrations">⛓ &nbsp;Integrações</button>
+      </nav>
+      <div class="grow"></div><small>PROJETO INDEPENDENTE DA AGÊNCIA</small>
+      <button id="logout" class="btn">Sair da conta</button>
+    </aside>
+    <main>
+      <header class="top"><div><div class="kicker">Inteligência operacional</div><h1 id="pageTitle">Visão geral</h1><div class="sub" id="pageSubtitle">Venda, custo e origem — sem números fictícios.</div></div>
+        <div class="controls"><select id="workspaceSelect" class="input" aria-label="Agência"></select><button id="refresh" class="btn">↻ Atualizar</button></div></header>
+      <section id="createWorkspace" class="card hidden" style="max-width:590px"><h2>Crie o espaço da sua agência</h2><p class="sub">O Pulso mantém cada operação isolada.</p><form id="workspaceForm" class="form" style="margin-top:20px"><input class="input" id="workspaceName" placeholder="Ex.: Blackmamba Marketing" required><button class="btn primary" type="submit">Criar espaço</button></form><div id="workspaceFeedback" class="feedback hidden"></div></section>
+      <div id="workspaceContent" class="hidden">
+        <div id="overviewTab">
+          <div class="split" style="margin-bottom:18px"><div class="controls"><button class="chip active" data-period="0">Hoje</button><button class="chip" data-period="7">7 dias</button><button class="chip" data-period="30">30 dias</button></div><select id="currencySelect" class="input" aria-label="Moeda"></select></div>
+          <div class="grid">
+            <div class="card metric"><div class="name">FATURAMENTO BRUTO <span>◇</span></div><div class="value" id="revenue">—</div><div class="foot" id="revenueHelp">Vendas aprovadas e completas</div></div>
+            <div class="card metric"><div class="name">INVESTIMENTO EM MÍDIA <span>↗</span></div><div class="value" id="spend">—</div><div class="foot">Aguardando Meta Ads / Google Ads</div></div>
+            <div class="card metric"><div class="name">LUCRO VERIFICADO <span>≋</span></div><div class="value" id="profit">—</div><div class="foot">Requer custos, taxas e câmbio reconciliados</div></div>
+            <div class="card metric"><div class="name">ROAS <span>↝</span></div><div class="value" id="roas">—</div><div class="foot">Disponível após conectar anúncios</div></div>
+          </div>
+          <div class="cols">
+            <div class="card"><div class="cardheader"><div><h2>Faturamento por dia</h2><p class="sub">Compras confirmadas na moeda selecionada</p></div><span class="pill">Hotmart</span></div><div id="chartContainer"><div class="empty">Nenhuma venda confirmada no período</div></div></div>
+            <div class="card"><div class="cardheader"><div><h2>Saúde do tracking</h2><p class="sub">Qualidade do vínculo entre venda e origem</p></div><span class="pill" id="trackingBadge">Sem dados</span></div>
+              <div class="status"><div><h3>Origem informada na Hotmart</h3><p>Campo src, sck ou xcod presente na transação</p></div><strong id="trackingPct">—</strong></div>
+              <div class="status"><div><h3>Cliques de checkout</h3><p>Rastreador próprio do Pulso</p></div><strong id="clicks">—</strong></div>
+              <div class="status"><div><h3>Vendas sem origem</h3><p>Não atribuímos vendas por adivinhação</p></div><strong id="unattributed">—</strong></div></div>
+          </div>
+          <div class="cols"><div class="card"><div class="cardheader"><div><h2>Últimas vendas</h2><p class="sub">Pedido, produto e status atualizado pela Hotmart</p></div><button class="btn" data-goto="sales">Ver todas</button></div><div id="recentSales" class="table-scroll"></div></div>
+            <div class="card"><div class="cardheader"><div><h2>Conexões da operação</h2><p class="sub">Integrações reais verificadas</p></div></div><div id="integrationStatus"></div><button data-goto="integrations" class="btn" style="margin-top:17px">Configurar integrações</button></div></div>
+        </div>
+        <div id="salesTab" class="hidden"><div class="card"><div class="cardheader"><div><h2>Vendas e pedidos</h2><p class="sub">Valores brutos, status e origem. Os valores líquidos ainda exigem reconciliação.</p></div></div><div id="allSales" class="table-scroll"></div></div></div>
+        <div id="integrationsTab" class="hidden"><div class="cols"><div class="card"><h2>Conectar Hotmart</h2><p class="sub">Cadastre o Hottok oficial da sua conta; o token será armazenado apenas como hash no backend, nunca na página.</p>
+          <form id="hotmartForm" class="form" style="margin-top:18px"><label>Nome da conexão<input class="input" id="hotmartLabel" placeholder="Hotmart da agência" value="Hotmart da agência"></label>
+            <label>Hottok da Hotmart<input class="input" id="hotmartHottok" type="password" autocomplete="off" placeholder="Cole aqui no Pulso, não no chat" required></label>
+            <button class="btn primary" type="submit">Salvar conexão segura</button></form><div id="hotmartFeedback" class="feedback hidden"></div>
+            <p class="note section">Após cadastrar, configure o Webhook 2.0 na Hotmart com esta URL:</p><div class="code" id="webhookUrl"></div><button class="btn" id="copyWebhook" style="margin-top:12px">Copiar URL</button></div>
+            <div class="card"><h2>Próximas integrações</h2><div class="status"><div><h3>Meta Ads</h3><p>OAuth e leitura das contas de anúncios</p></div><span class="pill">Em preparação</span></div>
+              <div class="status"><div><h3>Google Ads / YouTube</h3><p>Custos e campanhas por conta</p></div><span class="pill">Em preparação</span></div><div class="notice" style="margin-top:20px">Quando a Hotmart enviar a primeira notificação válida, a conexão passa de pendente para conectada.</div></div></div></div>
+      </div>
+      <p class="note section">Pulso Campanhas 2.0 • Dados isolados por workspace • Vendas sem atribuição não são associadas a campanhas automaticamente.</p>
+      <div id="mainFeedback" class="feedback hidden"></div>
+    </main>
+  </div>
+  <script type="module">
+    import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.95.0';
+    const URL='https://nlrhtioxsbncpluchfcz.supabase.co';
+    const KEY='sb_publishable_sYyZS1MnpSi-CzmDDeeeUw_eOYl09re';
+    const supabase=createClient(URL,KEY);
+    const $=id=>document.getElementById(id);
+    const state={user:null,workspaces:[],workspace:null,period:0,currency:'BRL',sales:[],integrations:[],events:[],tab:'overview',registered:false};
+    const money=(amount,curr)=>new Intl.NumberFormat('pt-BR',{style:'currency',currency:curr||'BRL'}).format(Number(amount)||0);
+    const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+    const show=(id,msg,ok=false)=>{const el=$(id);el.classList.remove('hidden');el.classList.toggle('ok',ok);el.textContent=msg};
+    const errorMsg=e=>e?.message||String(e);
+    const tab=(name)=>{state.tab=name;for(const n of ['overview','sales','integrations'])$(n+'Tab').classList.toggle('hidden',name!==n);
+       document.querySelectorAll('[data-tab]').forEach(b=>b.classList.toggle('active',b.dataset.tab===name));
+       $('pageTitle').textContent=({overview:'Visão geral',sales:'Vendas',integrations:'Integrações'})[name];};
+    document.querySelectorAll('[data-tab]').forEach(b=>b.onclick=()=>tab(b.dataset.tab));
+    document.querySelectorAll('[data-goto]').forEach(b=>b.onclick=()=>tab(b.dataset.goto));
+    document.querySelectorAll('[data-period]').forEach(b=>b.onclick=()=>{state.period=Number(b.dataset.period);document.querySelectorAll('[data-period]').forEach(x=>x.classList.toggle('active',x===b));refresh();});
+    $('currencySelect').onchange=e=>{state.currency=e.target.value;render()};
+    $('workspaceSelect').onchange=e=>{state.workspace=state.workspaces.find(w=>w.id===e.target.value);refresh()};
+    $('refresh').onclick=()=>refresh();
+    $('logout').onclick=async()=>{await supabase.auth.signOut();state.user=null;renderAuth()};
+    $('authMode').onclick=e=>{e.preventDefault();state.registered=!state.registered;$('authTitle').textContent=state.registered?'Criar conta':'Entrar na operação';$('authSubmit').textContent=state.registered?'Criar conta':'Entrar';$('authMode').textContent=state.registered?'Já tenho conta':'Criar minha conta';$('authFeedback').classList.add('hidden')};
+    $('authForm').onsubmit=async e=>{e.preventDefault();$('authSubmit').disabled=true;const email=$('email').value.trim();const password=$('password').value;
+       const result=state.registered?await supabase.auth.signUp({email,password}):await supabase.auth.signInWithPassword({email,password});
+       $('authSubmit').disabled=false;
+       if(result.error)return show('authFeedback',errorMsg(result.error));
+       if(state.registered&&!result.data.session)return show('authFeedback','Conta criada. Confirme o e-mail antes de entrar.',true);
+       await boot();};
+    $('workspaceForm').onsubmit=async e=>{e.preventDefault();const name=$('workspaceName').value.trim();if(!name)return;
+       const {error}=await supabase.from('workspaces').insert({name,owner_id:state.user.id});
+       if(error)return show('workspaceFeedback',errorMsg(error));await loadWorkspaces()};
+    $('copyWebhook').onclick=async()=>{const url=$('webhookUrl').textContent;try{await navigator.clipboard.writeText(url);show('hotmartFeedback','URL copiada.',true)}catch{show('hotmartFeedback','Selecione e copie a URL manualmente.')}};
+    $('hotmartForm').onsubmit=async e=>{e.preventDefault();const hottok=$('hotmartHottok').value;const label=$('hotmartLabel').value.trim();if(!state.workspace)return;
+      const {data:{session}}=await supabase.auth.getSession();if(!session)return show('hotmartFeedback','Sua sessão expirou. Entre novamente.');
+      const btn=e.target.querySelector('button[type=submit]');btn.disabled=true;
+      try{const r=await fetch(URL+'/functions/v1/hotmart-connect',{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+session.access_token},body:JSON.stringify({workspace_id:state.workspace.id,label,hottok})});
+        const payload=await r.json();if(!r.ok)throw Error(payload.error||'Falha ao salvar conexão');
+        $('hotmartHottok').value='';show('hotmartFeedback','Conexão salva. Agora configure a URL de webhook 2.0 na Hotmart e faça um envio de teste.',true);await refresh();
+      }catch(err){show('hotmartFeedback',errorMsg(err))}finally{btn.disabled=false}};
+    function renderAuth(){$('authPage').classList.remove('hidden');$('appPage').classList.add('hidden')}
+    async function boot(){const {data:{user},error}=await supabase.auth.getUser();if(error||!user)return renderAuth();
+      state.user=user;$('authPage').classList.add('hidden');$('appPage').classList.remove('hidden');await loadWorkspaces();}
+    async function loadWorkspaces(){const {data,error}=await supabase.from('workspaces').select('id,name,currency').order('created_at');if(error)return show('mainFeedback',errorMsg(error));
+      state.workspaces=data||[];state.workspace=state.workspaces.find(w=>w.id===state.workspace?.id)||state.workspaces[0]||null;
+      $('workspaceSelect').innerHTML=state.workspaces.map(w=>'<option value="'+esc(w.id)+'">'+esc(w.name)+'</option>').join('');
+      $('workspaceSelect').value=state.workspace?.id||'';$('workspaceSelect').classList.toggle('hidden',!state.workspace);
+      $('createWorkspace').classList.toggle('hidden',!!state.workspace);$('workspaceContent').classList.toggle('hidden',!state.workspace);
+      if(state.workspace)await refresh();}
+    function sinceDate(){const d=new Date();if(state.period===0){const text=new Intl.DateTimeFormat('en-CA',{timeZone:'America/Sao_Paulo',year:'numeric',month:'2-digit',day:'2-digit'}).format(d);return new Date(text+'T00:00:00-03:00')}
+      d.setDate(d.getDate()-state.period);return d;}
+    async function allRows(table,columns,apply){const result=[];let from=0;while(from<10000){let q=supabase.from(table).select(columns).eq('workspace_id',state.workspace.id).range(from,from+999);q=apply(q);const {data,error}=await q;if(error)throw error;result.push(...(data||[]));if(!data||data.length<1000)break;from+=1000;}return result;}
+    async function refresh(){if(!state.workspace)return;
+      try{const from=sinceDate().toISOString();
+       const [sales,integrations,events]=await Promise.all([
+        allRows('sales','id,external_transaction_id,product_name,status,currency,gross_amount,net_amount,net_amount_verified,purchased_at,src,sck,xcod',q=>q.gte('purchased_at',from).order('purchased_at',{ascending:false})),
+        supabase.from('integrations').select('provider,status,provider_user_name,last_sync_at').eq('workspace_id',state.workspace.id),
+        supabase.from('funnel_events').select('event_name,occurred_at').eq('workspace_id',state.workspace.id).gte('occurred_at',from).limit(1000)
+       ]);
+       if(integrations.error)throw integrations.error;if(events.error)throw events.error;
+       state.sales=sales;state.integrations=integrations.data||[];state.events=events.data||[];
+       const currencies=[...new Set(state.sales.map(s=>s.currency).filter(Boolean))];
+       if(!currencies.includes(state.currency))state.currency=currencies[0]||state.workspace.currency||'BRL';
+       $('currencySelect').innerHTML=[...new Set([...currencies,state.currency])].map(c=>'<option>'+esc(c)+'</option>').join('');$('currencySelect').value=state.currency;
+       render();$('mainFeedback').classList.add('hidden');
+      }catch(err){show('mainFeedback','Não foi possível carregar os dados: '+errorMsg(err));}}
+    function salesTable(rows){if(!rows.length)return '<div class="empty">Nenhuma venda registrada neste período</div>';
+       return '<table><thead><tr><th>Pedido</th><th>Produto</th><th>Status</th><th>Origem</th><th>Bruto</th></tr></thead><tbody>'+rows.map(s=>
+       '<tr><td>'+esc(s.external_transaction_id)+'</td><td>'+esc(s.product_name||'—')+'</td><td>'+esc(s.status||'—')+'</td><td>'+esc(s.src||s.sck||s.xcod||'Não identificada')+'</td><td>'+esc(money(s.gross_amount,s.currency))+'</td></tr>').join('')+'</tbody></table>'}
+    function render(){const all=state.sales;const rows=all.filter(s=>s.currency===state.currency);
+      const active=rows.filter(s=>['APPROVED','COMPLETE'].includes(s.status));const reversed=rows.filter(s=>['REFUNDED','CHARGEBACK'].includes(s.status));
+      $('revenue').textContent=money(active.reduce((sum,s)=>sum+Number(s.gross_amount),0),state.currency);
+      $('revenueHelp').textContent=active.length+' confirmadas • '+reversed.length+' reembolsadas/chargebacks';
+      const withOrigin=active.filter(s=>s.src||s.sck||s.xcod).length;
+      $('trackingPct').textContent=active.length?Math.round(withOrigin/active.length*100)+'%':'—';
+      $('unattributed').textContent=active.length?String(active.length-withOrigin):'—';
+      $('trackingBadge').textContent=active.length?'Origem parcial':'Sem vendas';
+      const ev=state.events.filter(e=>e.event_name==='checkout_click').length;
+      $('clicks').textContent=state.events.length?String(ev):'Não instrumentado';
+      $('recentSales').innerHTML=salesTable(all.slice(0,8));$('allSales').innerHTML=salesTable(all);
+      const integrations=['hotmart','meta','google_ads'];
+      $('integrationStatus').innerHTML=integrations.map(p=>{const items=state.integrations.filter(i=>i.provider===p);
+       const name=p==='hotmart'?'Hotmart':p==='meta'?'Meta Ads':'Google Ads';
+       const connected=items.some(i=>i.status==='connected');const pending=items.some(i=>i.status==='pending');
+       return '<div class="status"><div><h3>'+name+'</h3><p>'+(connected?'Conexão confirmada por evento válido':pending?'Aguardando primeiro evento válido':'Não conectada')+'</p></div><div><span class="dot '+(connected?'on':pending?'warn':'')+'"></span>'+esc(connected?'Conectado':pending?'Pendente':'—')+'</div></div>'}).join('');
+      const grouped={};for(const s of active){const date=new Date(s.purchased_at||Date.now());const day=new Intl.DateTimeFormat('pt-BR',{timeZone:'America/Sao_Paulo',day:'2-digit',month:'2-digit'}).format(date);grouped[day]=(grouped[day]||0)+Number(s.gross_amount)}
+      const entries=Object.entries(grouped).reverse().slice(-7);
+      if(!entries.length){$('chartContainer').innerHTML='<div class="empty">Nenhuma venda confirmada no período</div>';return;}
+      const max=Math.max(...entries.map(x=>x[1]),1);
+      $('chartContainer').innerHTML='<div class="chart">'+entries.map(([day,n])=>'<div class="barcol"><div class="bar" title="'+esc(money(n,state.currency))+'" style="height:'+Math.max(3,Math.round(n/max*85))+'%"></div><span class="barlabel">'+esc(day)+'</span></div>').join('')+'</div>';
+    }
+    $('webhookUrl').textContent=URL+'/functions/v1/hotmart-webhook';
+    boot();
+  </script>
+</body>
+</html>
