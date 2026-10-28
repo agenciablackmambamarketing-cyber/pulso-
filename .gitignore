@@ -22,3 +22,6 @@ coverage/
 *.zip
 dist/
 build/
+
+# Generated environment-specific public dashboard configuration
+dashboard/config.json

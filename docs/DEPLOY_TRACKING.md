@@ -2,7 +2,7 @@
 
 ## Estado desta entrega
 
-Nenhum SQL ou função desta branch foi aplicado em produção. As duas funções Hotmart existentes continuam como auditadas. A CAPI nova é **somente de teste**, inclusive no backend: `pulso_meta_save` recusa modo diferente de `test` e o worker recusa jobs de produção. Um release de produção exigirá implementação/revisão do gate de ativação e autorização separada; não há uma variável que habilite envios reais por acidente.
+Nenhum SQL ou função desta branch foi aplicado em produção. Em 28/10/2026, baseline e quatro incrementos foram aplicados somente ao staging osgumasejgumqlnqxcvm; cinco Edge Functions estão ativas lá, ainda sem segredos de coleta/envio. Ver STAGING_STATUS.md. As duas funções Hotmart existentes continuam como auditadas. A CAPI nova é **somente de teste**, inclusive no backend: `pulso_meta_save` recusa modo diferente de `test` e o worker recusa jobs de produção. Um release de produção exigirá implementação/revisão do gate de ativação e autorização separada; não há uma variável que habilite envios reais por acidente.
 
 ## Banco e histórico
 
@@ -50,7 +50,7 @@ supabase functions deploy meta-worker --project-ref STAGING_PROJECT_REF
 
 ## Dashboard, sites e credenciais
 
-- Alterar **somente a cópia staging** dos valores públicos URL/KEY em `dashboard/app.mjs` para o projeto staging antes de servir em HTTPS. O arquivo versionado mantém o projeto público original por compatibilidade; não usar esse destino em testes de escrita.
+- O painel agora carrega `dashboard/config.json` público explícito e não inicializa Supabase se a configuração faltar ou for inválida. Gere a cópia isolada com `PULSO_STAGING_PROJECT_REF` e `PULSO_STAGING_PUBLISHABLE_KEY` executando `node scripts/build-staging-dashboard.mjs`. O build de staging recusa o projeto conhecido de produção. Nenhum segredo pode ser incluído nesse JSON; a cópia gerada fica em `dist/staging-dashboard`.
 - Entrar/criar conta, criar workspace staging. Hottok no formulário Hotmart; Meta dataset/token/test_event_code no formulário Meta. `GET dataset?fields=id` confirma acesso/identidade, **não comprova permissão de envio CAPI**: Test Events é obrigatório.
 - Como owner/admin do workspace, executar via cliente Auth a RPC `configure_tracking_site` com `p_workspace_id`, `p_site_key`, `p_allowed_origins` HTTPS exatos, `p_consent_policy_version`. Não registrar origem de outro cliente e não aceitar wildcard.
 - Versionar previamente uma campanha/conta sintética autorizada em staging se for testar `utm_campaign`: esta versão só transforma IDs externos de campanhas registradas em rótulos públicos; UTMs brutos ficam privados.

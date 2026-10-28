@@ -1,4 +1,3 @@
-import "jsr:@supabase/functions-js@2.118.0/edge-runtime.d.ts";
 import {createClient} from "npm:@supabase/supabase-js@2.95.0";
 import {handleMetaConnect} from "../_shared/meta-connect.mjs";
 function envKey(modern:string,legacy:string){try{return JSON.parse(Deno.env.get(modern)||"{}").default||Deno.env.get(legacy);}catch{return undefined;}}

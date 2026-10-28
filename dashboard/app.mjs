@@ -1,7 +1,14 @@
-import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.95.0';
+import { startConfiguredDashboard } from './config.mjs';
 import {escapeHtml as esc, currencyAmount as money, selectCurrency, createRequestScope, metricForCurrency, validateMetrics} from './metrics.mjs';
-const URL='https://nlrhtioxsbncpluchfcz.supabase.co';
-const KEY='sb_publishable_sYyZS1MnpSi-CzmDDeeeUw_eOYl09re';
+await startConfiguredDashboard({
+ onError:message=>{document.getElementById('configFeedback').textContent=message;},
+ onReady:async config=>{
+const { createClient } = await import('https://esm.sh/@supabase/supabase-js@2.95.0');
+const URL=config.supabase_url;
+const KEY=config.publishable_key;
+document.title=`Pulso Campanhas · ${config.environment==='staging'?'Staging':'Produção'}`;
+document.getElementById('configPage').classList.add('hidden');
+document.getElementById('authPage').classList.remove('hidden');
 const supabase=createClient(URL,KEY);
 const $=id=>document.getElementById(id);
 const state={user:null,workspaces:[],workspace:null,period:0,currency:'BRL',metrics:null,sales:[],integrations:[],destinations:[],tab:'overview',registered:false,role:null};
@@ -48,3 +55,4 @@ const entries=metrics.daily_revenue.filter(item=>item.currency===state.currency)
 $('webhookUrl').textContent=URL+'/functions/v1/hotmart-webhook';
 supabase.auth.onAuthStateChange(event=>{if(event==='SIGNED_OUT'){state.user=null;state.workspace=null;clearSecrets();renderAuth()}});
 boot();
+ }});

@@ -1,4 +1,3 @@
-import "jsr:@supabase/functions-js@2.118.0/edge-runtime.d.ts";
 import {createClient} from "npm:@supabase/supabase-js@2.95.0";
 import {handleMetaWorker} from "../_shared/meta-worker.mjs";
 Deno.serve(async(request:Request)=>{

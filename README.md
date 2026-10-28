@@ -1,6 +1,6 @@
 # Pulso Campanhas — tracking first-party e Hotmart
 
-Implementação revisável do P0 da [issue #2](https://github.com/agenciablackmambamarketing-cyber/pulso-/issues/2), incorporando e ampliando o SDK da [PR #1](https://github.com/agenciablackmambamarketing-cyber/pulso-/pull/1). **As alterações desta branch não estão implantadas. Meta opera exclusivamente com Test Events; ativação de conversões de produção não está disponível nesta entrega.**
+Implementação revisável do P0 da [issue #2](https://github.com/agenciablackmambamarketing-cyber/pulso-/issues/2), incorporando e ampliando o SDK da [PR #1](https://github.com/agenciablackmambamarketing-cyber/pulso-/pull/1). **As alterações estão implantadas somente no staging isolado; produção permanece inalterada. Os endpoints de coleta/envio aguardam segredos e credenciais de teste. Meta opera exclusivamente com Test Events; ativação de conversões de produção não está disponível nesta entrega.**
 
 ## Fluxo implementado
 
@@ -49,6 +49,8 @@ deno task check
 `test:db` cria um banco temporário aleatório, carrega o baseline, aplica as novas migrações e remove somente esse banco ao terminar. Recusa host fora de loopback e não lê credenciais Supabase. Os stubs locais de Auth permitem testar RLS/RPCs, mas não equivalem a executar o gateway Auth/PostgREST hospedado. O fluxo integrado usa PostgreSQL real e resposta Meta simulada; não comprova recepção externa. [Relatório de verificação](docs/VERIFICATION.md).
 
 ## Operação e próximos passos
+
+[Estado atual do staging e configuração pendente](docs/STAGING_STATUS.md).
 
 - [Deploy, configuração e rollback](docs/DEPLOY_TRACKING.md)
 - [Consentimento, matriz de dados e retenção](docs/PRIVACY_TRACKING.md)
