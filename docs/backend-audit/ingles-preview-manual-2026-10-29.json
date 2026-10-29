@@ -1,0 +1,27 @@
+{
+  "checked_on": "2026-10-29",
+  "environment": "isolated_staging",
+  "project_ref": "osgumasejgumqlnqxcvm",
+  "evidence": "User reported completing the private preview; read-only backend aggregates verified the corresponding ordered session.",
+  "event_aggregates": {
+    "page_view": {"received_events": 1, "distinct_sessions": 1},
+    "view_content": {"received_events": 1, "distinct_sessions": 1},
+    "checkout_click": {"received_events": 4, "distinct_sessions": 1}
+  },
+  "ordered_session_funnel": {
+    "page_view": 1,
+    "view_content": 1,
+    "checkout_click": 1,
+    "checkout_started": {"observed_sessions": 0, "measured": false}
+  },
+  "sessions_with_current_versioned_consent": 1,
+  "orders": 0,
+  "meta_outbox_entries": 0,
+  "hotmart": {"status": "pending", "last_valid_event_received": false},
+  "limitations": [
+    "This verifies actual staging visit/content/click collection and session continuity, not production traffic or a representative abandonment rate.",
+    "The user performed the navigation; the agent did not visually inspect or control the browser.",
+    "The private preview blocks payment navigation and does not infer checkout opening from clicks.",
+    "Official Hotmart notification, sck echo, approved purchase and Meta Test Events remain unverified."
+  ]
+}

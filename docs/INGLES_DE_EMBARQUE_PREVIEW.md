@@ -28,6 +28,8 @@ O original dispara Meta PageView ao carregar e InitiateCheckout no clique, sem u
 
 ## Validação e limites
 
+**Navegação manual recebida em29/10/2026:** o usuário informou ter realizado o teste. A leitura do backend confirmou1 PageView,1 ViewContent e4 eventos de clique, todos em uma única sessão consentida vinculada à cópia registrada. O funil ordenado é1→1→1; abertura de checkout permanece não medida. Não há venda nem registro na outbox Meta, e a Hotmart continua pendente de evento oficial. Evidência agregada, sem identificadores pessoais: `backend-audit/ingles-preview-manual-2026-10-29.json`. Isso comprova a continuidade da sessão e a coleta, não a taxa de abandono de uma campanha nem a inspeção visual do navegador pelo agente.
+
 103 testes Node passaram, incluindo10 do controlador e6 do artefato/integração SDK com transporte simulado: ausência de coleta antes do consentimento, visibilidade atual, retries, cliques rápidos, revogação em voo, expiração, preservação de assets, CSP, checkout inerte e isolamento de origem/build. Sintaxe e `git diff --check` passaram. Não houve QA visual ou sessão autenticada de navegador: a ferramenta de controle não está disponível.
 
 No coletor hospedado: preflight da origem privada204, origem da página de produção403, requisição completa com consentimento recusado403/consent_required. Consulta confirmou um site registrado e zero sessões/eventos na agência antes de uma navegação manual; os testes não adicionaram visitas fictícias ao seu funil.

@@ -2,6 +2,8 @@
 
 ## Atualização — funil de sessões
 
+**Teste manual confirmado no backend em29/10/2026:**1 visita,1 visualização da oferta e4 cliques recebidos na mesma sessão consentida da cópia privada. O funil deduplicado é1→1→1; checkout aberto não medido. Zero vendas/outbox Meta. Hotmart ainda pendente do teste oficial. Ver `backend-audit/ingles-preview-manual-2026-10-29.json`. A navegação foi feita pelo usuário; o agente verificou agregados do backend sem inspecionar o navegador.
+
 **Página fornecida e cópia de teste preparada:** https://ingles-de-embarque-black-mamba.netlify.app/ está no Netlify com deploy manual. A cópia privada foi instrumentada no caminho `/teste-ingles-de-embarque/` do painel, sem alterar esse deploy. O site first-party foi registrado apenas no staging e passou por checagens de origem/consentimento. Ver [INGLES_DE_EMBARQUE_PREVIEW.md](INGLES_DE_EMBARQUE_PREVIEW.md) para navegação, procedência, eventos e limitações.103 testes Node passaram nesta revisão. O painel identifica visivelmente o ambiente de testes.
 
 Aplicado apenas no staging o incremento `20261029023643_pulso_ordered_session_funnel.sql`: agrega sessões em sequência sem conceder acesso a identificadores. O painel ganhou aba Funil, taxas por etapa, maior queda em volume, filtros Hoje/7/30 dias e tratamento explícito de checkout sem confirmação. Definições e limites em [FUNNEL.md](FUNNEL.md).
