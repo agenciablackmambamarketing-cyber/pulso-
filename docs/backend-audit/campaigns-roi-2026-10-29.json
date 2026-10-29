@@ -1,0 +1,33 @@
+{
+  "date": "2026-10-29",
+  "environment": "isolated_staging",
+  "feature": "campaigns_and_media_roi",
+  "local_verification": {
+    "node_tests": {"passed": 146, "failed": 0, "skipped": 0},
+    "postgres_tests": {"passed": 60, "failed": 0, "ads_tests_included": 11},
+    "deno_version": "2.9.6",
+    "deno_wrappers_checked": 6,
+    "static_build": "passed",
+    "diff_check": "passed",
+    "graph_transport": "mocked_only"
+  },
+  "hosted_release": {
+    "migration_apply_attempts": 2,
+    "tool_error_code": "INVALID_ARGUMENT",
+    "tool_error_message": "Invalid or expired requestState",
+    "post_attempt_catalog": {"ads_table_exists": false, "ads_metrics_exists": false},
+    "migration_applied": false,
+    "meta_ads_edge_deployed": false,
+    "dashboard_updated": false
+  },
+  "scope": {
+    "revenue": "all_recorded_sales_in_workspace_per_currency",
+    "implemented_media_adapters": ["meta"],
+    "other_media_and_sales_connectors": "pending",
+    "net_profit_and_net_roi": "unknown_until_costs_reconciled"
+  },
+  "external_meta_account_verified": false,
+  "official_hotmart_test_verified": false,
+  "conversions_sent": 0,
+  "production_modified": false
+}

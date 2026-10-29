@@ -15,3 +15,6 @@ verify_jwt = false # auth.getUser + service-only owner/admin RPC in handler.
 
 [functions.meta-worker]
 verify_jwt = false # Constant-time worker-secret authorization, never a public browser key.
+
+[functions.meta-ads]
+verify_jwt = false # Verified Auth user + owner/admin RPC; Graph reads only, no ad mutations.

@@ -2,10 +2,10 @@
 
 ## Staging e teste externo pendentes
 
-- [ ] Provisionar Supabase staging isolado e aplicar baseline/migrações conforme DEPLOY_TRACKING.md.
-- [ ] Configurar segredos Edge, origens exatas e versão Graph suportada.
-- [ ] Apontar cópia staging do dashboard para URL/chave publicável staging.
-- [ ] Criar dois workspaces e validar acesso cruzado também via Auth/PostgREST hospedado.
+- [x] Provisionar Supabase staging isolado e aplicar baseline/incrementos de tracking, Vault e funil conforme DEPLOY_TRACKING.md.
+- [x] Configurar runtime interno, origens exatas e versão Graph de teste via Vault.
+- [x] Apontar cópia staging do dashboard para URL/chave publicável staging.
+- [x] Validar acesso cruzado com duas contas sintéticas via Auth/PostgREST hospedado; fixtures removidas.
 - [ ] Registrar origem/site e campanha autorizada do Inglês de Embarque.
 - [ ] Cadastrar Hottok pelo painel; configurar Hotmart Webhook V2 no endpoint staging.
 - [ ] Cadastrar dataset/token/test_event_code Meta pelo painel; verificar dataset correto.
@@ -18,6 +18,9 @@
 - [ ] Testar token inválido, erro transitório, retry, revogação, reembolso/chargeback e aprovação atrasada.
 - [ ] Confirmar dashboard sem PII, por moeda e workspace; aceitação da API não é atribuição de anúncio.
 - [ ] Agendar worker/retention, validar proxy antes de habilitar IP e revisar aviso LGPD.
+- [ ] Restabelecer publicação de migrações: ferramenta retornou `Invalid or expired requestState`; incremento Meta Ads/ROI continua somente na branch.
+- [ ] Aplicar incremento Meta Ads uma vez, publicar `meta-ads` e atualizar painel privado; conferir RLS/grants.
+- [ ] Conectar conta autorizada com `ads_read`; comparar gastos, campanhas ativas/pausadas e ROI no mesmo período, fuso e moeda. Validar sinais verde/vermelho sem usar dados demonstrativos como reais.
 
 ## Produção — não ativada
 

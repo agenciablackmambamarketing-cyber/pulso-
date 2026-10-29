@@ -2,11 +2,11 @@
 
 ## Estado desta entrega
 
-Nenhum SQL ou função desta branch foi aplicado em produção. Em 28/10/2026, baseline e quatro incrementos foram aplicados somente ao staging osgumasejgumqlnqxcvm; cinco Edge Functions estão ativas lá, ainda sem segredos de coleta/envio. Ver STAGING_STATUS.md. As duas funções Hotmart existentes continuam como auditadas. A CAPI nova é **somente de teste**, inclusive no backend: `pulso_meta_save` recusa modo diferente de `test` e o worker recusa jobs de produção. Um release de produção exigirá implementação/revisão do gate de ativação e autorização separada; não há uma variável que habilite envios reais por acidente.
+Nenhum SQL ou função desta branch foi aplicado em produção. O staging osgumasejgumqlnqxcvm possui baseline e incrementos de tracking/Vault/funil; cinco Edge Functions estão ativas e o runtime interno foi provisionado via Vault. A atualização de Meta Ads/ROI está implementada e testada localmente, com aplicação hospedada bloqueada por erro da ferramenta de migração. Ver STAGING_STATUS.md para o estado verificado. A CAPI nova é **somente de teste**, inclusive no backend: `pulso_meta_save` recusa modo diferente de `test` e o worker recusa jobs de produção. Um release de produção exigirá implementação/revisão do gate de ativação e autorização separada; não há uma variável que habilite envios reais por acidente.
 
 ## Banco e histórico
 
-1. Criar/selecionar um projeto Supabase **staging isolado**, sem consumidores reais e sem cadastrar o webhook de contas de vendas reais. Nenhum staging foi criado automaticamente nesta tarefa.
+1. Selecionar um projeto Supabase **staging isolado**, sem consumidores reais. O projeto autorizado `osgumasejgumqlnqxcvm` já existe; não provisionar outro nem reaplicar seu baseline. Validar webhooks externos somente com eventos de teste autorizados.
 2. Em staging vazio, provisionar Auth/roles padrões Supabase e executar `supabase/baseline/observed-2026-10-28.sql`. Ele recusa banco com `public.workspaces`. `tests/database/auth-bootstrap.sql` é só para PostgreSQL local, **nunca Supabase hospedado**.
 3. Em staging equivalente ao backend existente, comparar snapshot/catálogo à auditoria e não executar o baseline.
 4. Aplicar, uma vez, nesta ordem e em transação individual por arquivo, com credenciais somente no gerenciador do ambiente/SQL editor:
@@ -16,6 +16,7 @@ Nenhum SQL ou função desta branch foi aplicado em produção. Em 28/10/2026, b
    - `20261028010125_pulso_safe_dashboard_metrics.sql`
    - `20261028091816_pulso_vault_runtime_config.sql` (necessário para usar o fallback Vault deste staging)
    - `20261029023643_pulso_ordered_session_funnel.sql` (aba Funil; não concede acesso a identificadores)
+   - `20261029124537_pulso_meta_ads_read_cache.sql` (leitura de anúncios, cobertura e ROI de mídia; ver CAMPAIGNS_ROI.md)
 5. Registrar cada nova migração pelo fluxo de release revisado do ambiente. Não inventar arquivos antigos nem marcar histórico como aplicado sem comparação. Os arquivos novos não são scripts para reaplicar livremente: constraints, triggers e políticas já existentes devem ser verificados antes de qualquer retry.
 6. Confirmar RLS, grants de colunas e ACLs de funções com as consultas da auditoria. Nenhuma tabela privada deve ficar acessível a anon/authenticated; `sales.raw`, origens, IDs, matching e payloads não podem ser selecionados pelo dashboard.
 
@@ -48,6 +49,7 @@ supabase functions deploy hotmart-webhook --project-ref STAGING_PROJECT_REF
 supabase functions deploy hotmart-connect --project-ref STAGING_PROJECT_REF
 supabase functions deploy meta-connect --project-ref STAGING_PROJECT_REF
 supabase functions deploy meta-worker --project-ref STAGING_PROJECT_REF
+supabase functions deploy meta-ads --project-ref STAGING_PROJECT_REF
 ```
 
 `supabase/config.toml` declara `verify_jwt=false` porque cada endpoint aplica a própria autenticação: Hottok, getUser+papel ou segredo do worker. Isso não autoriza retirar os checks do código. O coletor é público com limites específicos. Dependências runtime fixadas em versões e lockfile.

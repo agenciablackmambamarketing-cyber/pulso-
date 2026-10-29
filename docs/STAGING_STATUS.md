@@ -1,5 +1,15 @@
 # Staging — histórico e estado em 29/10/2026
 
+## Atualização — campanhas, gastos e ROI de mídia
+
+Implementação concluída na branch: leitura server-side Meta Ads, credenciais cifradas por workspace/conta, sincronização atômica, campanhas ativas, gastos incluindo campanhas pausadas e ROI de mídia positivo em verde/negativo em vermelho. Receita considera todas as plataformas de venda registradas, com escopo de mídia Meta explícito; Google/Taboola e outras fontes dependem de conectores. Lucro líquido e ROI líquido continuam indisponíveis sem custos conciliados. Ver [CAMPAIGNS_ROI.md](CAMPAIGNS_ROI.md).
+
+Validação local nesta revisão:146 testes Node e60 testes PostgreSQL passaram; Deno2.9.6 validou seis wrappers. As respostas Graph são simuladas: nenhuma conta Meta real foi consultada e nenhuma conversão foi enviada.
+
+**Publicação desta atualização bloqueada:** `apply_migration` retornou `INVALID_ARGUMENT / Invalid or expired requestState` em duas tentativas. A consulta posterior confirmou ausência de `meta_ads_accounts` e `pulso_ads_metrics`; o histórico permaneceu com sete entradas. Portanto a migração nova NÃO foi aplicada, `meta-ads` NÃO foi publicado e o painel hospedado NÃO foi substituído pela versão de ROI. O staging privado existente e a página original Netlify foram preservados. Repetir o release somente após restabelecer a ferramenta, conferindo catálogo/histórico antes de qualquer tentativa. Isso é uma falha da chamada da ferramenta, sem evidência de rejeição do SQL pelo PostgreSQL.
+
+Permanece pendente conectar uma conta de anúncios com `ads_read` pelo campo protegido e comparar dados reais no mesmo fuso/moeda/período. O teste oficial Hotmart depende de acesso autenticado à conta; Test Events CAPI e scheduler também permanecem pendentes. Não declarar retorno real a partir dos testes locais.
+
 ## Atualização — funil de sessões
 
 **Teste manual confirmado no backend em29/10/2026:**1 visita,1 visualização da oferta e4 cliques recebidos na mesma sessão consentida da cópia privada. O funil deduplicado é1→1→1; checkout aberto não medido. Zero vendas/outbox Meta. Hotmart ainda pendente do teste oficial. Ver `backend-audit/ingles-preview-manual-2026-10-29.json`. A navegação foi feita pelo usuário; o agente verificou agregados do backend sem inspecionar o navegador.

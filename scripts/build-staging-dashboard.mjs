@@ -9,7 +9,7 @@ export async function buildStagingDashboard(env = process.env, output = resolve(
   const config=validatePublicConfig({environment:'staging',project_ref,supabase_url:`https://${project_ref}.supabase.co`,publishable_key:env.PULSO_STAGING_PUBLISHABLE_KEY});
   const source=resolve(dirname(fileURLToPath(import.meta.url)),'../dashboard');
   await mkdir(output,{recursive:true});
-  for (const file of ['index.html','app.mjs','config.mjs','metrics.mjs','auth.mjs','funnel.mjs']) await copyFile(resolve(source,file),resolve(output,file));
+  for (const file of ['index.html','app.mjs','config.mjs','metrics.mjs','auth.mjs','funnel.mjs','ads.mjs','reporting.mjs']) await copyFile(resolve(source,file),resolve(output,file));
   const preview=resolve(output,'.'+EMBARQUE_PREVIEW.path);
   await rm(preview,{recursive:true,force:true});
   if(config.project_ref===EMBARQUE_PREVIEW.projectRef){
