@@ -14,6 +14,8 @@ Nenhum SQL ou função desta branch foi aplicado em produção. Em 28/10/2026, b
    - `20261028010034_pulso_first_party_collector.sql`
    - `20261028010038_hotmart_authenticated_tracking_v2.sql`
    - `20261028010125_pulso_safe_dashboard_metrics.sql`
+   - `20261028091816_pulso_vault_runtime_config.sql` (necessário para usar o fallback Vault deste staging)
+   - `20261029023643_pulso_ordered_session_funnel.sql` (aba Funil; não concede acesso a identificadores)
 5. Registrar cada nova migração pelo fluxo de release revisado do ambiente. Não inventar arquivos antigos nem marcar histórico como aplicado sem comparação. Os arquivos novos não são scripts para reaplicar livremente: constraints, triggers e políticas já existentes devem ser verificados antes de qualquer retry.
 6. Confirmar RLS, grants de colunas e ACLs de funções com as consultas da auditoria. Nenhuma tabela privada deve ficar acessível a anon/authenticated; `sales.raw`, origens, IDs, matching e payloads não podem ser selecionados pelo dashboard.
 
@@ -52,6 +54,7 @@ supabase functions deploy meta-worker --project-ref STAGING_PROJECT_REF
 
 ## Dashboard, sites e credenciais
 
+- A aba Funil usa a RPC `pulso_dashboard_funnel` e agrega sessões em sequência, não totais independentes de eventos. Aplicar o incremento correspondente antes de publicar a UI. Ver [FUNNEL.md](FUNNEL.md) para definições, limites de medição e checklist da página. A migração do funil foi gerada com CLI2.81.3 após validar o checksum oficial do binário; não exige alteração do runtime das Edge Functions.
 - O painel agora carrega `dashboard/config.json` público explícito e não inicializa Supabase se a configuração faltar ou for inválida. Gere a cópia isolada com `PULSO_STAGING_PROJECT_REF` e `PULSO_STAGING_PUBLISHABLE_KEY` executando `node scripts/build-staging-dashboard.mjs`. O build de staging recusa o projeto conhecido de produção. Nenhum segredo pode ser incluído nesse JSON; a cópia gerada fica em `dist/staging-dashboard`.
 - Entrar/criar conta, criar workspace staging. Hottok no formulário Hotmart; Meta dataset/token/test_event_code no formulário Meta. `GET dataset?fields=id` confirma acesso/identidade, **não comprova permissão de envio CAPI**: Test Events é obrigatório.
 - Como owner/admin do workspace, executar via cliente Auth a RPC `configure_tracking_site` com `p_workspace_id`, `p_site_key`, `p_allowed_origins` HTTPS exatos, `p_consent_policy_version`. Não registrar origem de outro cliente e não aceitar wildcard.

@@ -25,7 +25,7 @@ export async function isolatedDatabase() {
     await db.query(bootstrap);
     await db.query(await readFile(new URL('../../supabase/baseline/observed-2026-10-28.sql', import.meta.url), 'utf8'));
     const migrations = await readdir(new URL('../../supabase/migrations/', import.meta.url));
-    for (const file of migrations.filter(f => /^20261028\d+_.*\.sql$/.test(f)).sort()) {
+    for (const file of migrations.filter(f => /^\d{14}_.*\.sql$/.test(f) && f.slice(0,14) >= '20261028000000').sort()) {
       await db.query(await readFile(new URL(`../../supabase/migrations/${file}`, import.meta.url), 'utf8'));
     }
   } catch (error) {

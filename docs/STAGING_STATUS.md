@@ -1,4 +1,16 @@
-# Staging — 28/10/2026
+# Staging — histórico e estado em 29/10/2026
+
+## Atualização — funil de sessões
+
+Aplicado apenas no staging o incremento `20261029023643_pulso_ordered_session_funnel.sql`: agrega sessões em sequência sem conceder acesso a identificadores. O painel ganhou aba Funil, taxas por etapa, maior queda em volume, filtros Hoje/7/30 dias e tratamento explícito de checkout sem confirmação. Definições e limites em [FUNNEL.md](FUNNEL.md).
+
+Validação desta revisão:87 testes Node e49 testes PostgreSQL local passaram. No PostgreSQL hospedado do staging, uma fixture sintética dentro de transação confirmou contagem1→1→1→1 apesar de PageView repetido, negação cross-workspace, negação de anônimo e preservação dos grants restritos; houve rollback integral e zero fixtures remanescentes. A chamada PostgREST sem login retornou401/42501. Isso verifica banco e gateway anônimo, não substitui QA visual/autenticado no navegador. Controle de navegador indisponível nesta sessão.
+
+Estado atual observado: existe workspace da agência com uma fonte Hotmart ativa/salva, ainda sem eventos recebidos, sessões ou eventos do funil. Os trechos históricos abaixo que dizem zero workspaces/fontes referem-se à limpeza das fixtures anteriores. Nenhuma credencial ou configuração da agência foi alterada por esta revisão. A página de vendas ainda precisa ser instrumentada em cópia de teste; seu endereço/fonte foi solicitado. Produção permanece inalterada e nenhuma conversão real foi enviada.
+
+O security advisor manteve os avisos anteriores: tabelas privadas com deny-all intencional, `configure_tracking_site` com guarda owner/admin e proteção de senhas vazadas desativada. A função nova não criou aviso de definer público. Referências: [funções](https://supabase.com/docs/guides/database/database-linter?lint=0029_authenticated_security_definer_function_executable) e [senhas](https://supabase.com/docs/guides/auth/password-security#password-strength-and-leaked-password-protection).
+
+## Histórico — provisionamento em 28/10/2026
 
 Ambiente criado com autorização do usuário na mesma organização do Pulso. A alternativa de branch foi recusada pelo Supabase: exige plano Pro. Não foi contratado upgrade. Um projeto independente foi criado sem solicitação de confirmação de custo pela ferramenta; isso não é uma garantia de gratuidade futura.
 

@@ -8,7 +8,7 @@ export async function buildStagingDashboard(env = process.env, output = resolve(
   const config=validatePublicConfig({environment:'staging',project_ref,supabase_url:`https://${project_ref}.supabase.co`,publishable_key:env.PULSO_STAGING_PUBLISHABLE_KEY});
   const source=resolve(dirname(fileURLToPath(import.meta.url)),'../dashboard');
   await mkdir(output,{recursive:true});
-  for (const file of ['index.html','app.mjs','config.mjs','metrics.mjs','auth.mjs']) await copyFile(resolve(source,file),resolve(output,file));
+  for (const file of ['index.html','app.mjs','config.mjs','metrics.mjs','auth.mjs','funnel.mjs']) await copyFile(resolve(source,file),resolve(output,file));
   await writeFile(resolve(output,'config.json'),JSON.stringify(config,null,2)+'\n');
   return {output,project_ref:config.project_ref,environment:config.environment};
 }
