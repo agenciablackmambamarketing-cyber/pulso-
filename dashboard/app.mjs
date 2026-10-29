@@ -9,6 +9,7 @@ const { createClient } = await import('https://esm.sh/@supabase/supabase-js@2.95
 const URL=config.supabase_url;
 const KEY=config.publishable_key;
 document.title=`Pulso Campanhas · ${config.environment==='staging'?'Staging':'Produção'}`;
+document.getElementById('environmentBadge').classList.toggle('hidden',config.environment!=='staging');
 document.getElementById('configPage').classList.add('hidden');
 document.getElementById('authPage').classList.remove('hidden');
 const supabase=createClient(URL,KEY);

@@ -21,6 +21,8 @@ As métricas existentes continuam funcionando se o RPC novo falhar; somente o fu
 
 ## Ativação do Inglês de Embarque
 
+Cópia privada da página real preparada com medição consentida: [INGLES_DE_EMBARQUE_PREVIEW.md](INGLES_DE_EMBARQUE_PREVIEW.md). O original Netlify e o checkout de produção permanecem separados do laboratório; o teste não confirma abertura externa de checkout.
+
 1. Obter URL e fonte legítima da página, preparar cópia de teste e registrar a origem HTTPS com o owner/admin do workspace.
 2. Integrar `tracker/pulso-tracker.mjs` à CMP real. Sem consentimento de marketing não há eventos de funil. Emitir PageView e ViewContent conforme o conteúdo realmente observado.
 3. Emitir `checkout_click` no clique efetivo. Conservar oferta/afiliado e `sck` existente ao decorar o link de checkout.

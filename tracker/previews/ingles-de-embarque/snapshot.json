@@ -1,0 +1,56 @@
+{
+  "source_url": "https://ingles-de-embarque-black-mamba.netlify.app/",
+  "source_sha256": "1d7c28df2492e9dbe43635edfdf8018f16fdc06d068cb47e9e8674324180b8cf",
+  "retrieved_at": "2026-10-29T11:37:50.875474+00:00",
+  "netlify_site_id": "e611c185-1e4a-4403-9375-c29508959940",
+  "netlify_deploy_id": "6ae0b11d32b02de48c3f3bb6",
+  "source_kind": "published static HTML and public assets; manual deploy without source repository metadata",
+  "changes": [
+    "removed live Meta loader and checkout event listener",
+    "disabled checkout navigation in HTML",
+    "added explicit test consent UI and staging-only measurement",
+    "added noindex/referrer/CSP restrictions"
+  ],
+  "assets": [
+    {
+      "path": "assets/aeroporto-fotografia.webp",
+      "bytes": 136732,
+      "sha256": "8b2f4bcb6bee67853864e1e37ef6d44e078b796a40a31e09aee84ac8cb87834a"
+    },
+    {
+      "path": "assets/amostra-hotel.webp",
+      "bytes": 80144,
+      "sha256": "1a45529f6a6bb8e7ed06b92312e31ac1b11f53fa6c61151259d3db01bb130f71"
+    },
+    {
+      "path": "assets/cartoes-reais.webp",
+      "bytes": 30204,
+      "sha256": "a27741292bf89fa3a461f20a9386cbd2789ca03dd73c1f9ce8a94ec980a222a2"
+    },
+    {
+      "path": "assets/guia-aeroporto.webp",
+      "bytes": 48896,
+      "sha256": "05aa170dd67b35ad363d38b2a1481269a116336b8acbd0b95ba27ab881d5cff9"
+    },
+    {
+      "path": "assets/guia-ajuda.webp",
+      "bytes": 52044,
+      "sha256": "a24f799c4fa9e8b881f74007b57feb3179c33ff35376b66956c5b58c1364ddc5"
+    },
+    {
+      "path": "assets/guia-comida.webp",
+      "bytes": 50322,
+      "sha256": "56a569c6ca10a92f087144a452f040f49f74b4f501f3ee0607aa780114e65c3a"
+    },
+    {
+      "path": "assets/guia-hotel.webp",
+      "bytes": 57184,
+      "sha256": "ed9cc3c7e8eb3ca08e45d97fcee82c59eec5e99eae7fe062d490bcc9fb7c0779"
+    },
+    {
+      "path": "assets/plano-real.webp",
+      "bytes": 46658,
+      "sha256": "d48ffe03d9852e3b71c81470e35a898515d8e6424ae83077fe984129441ca0b6"
+    }
+  ]
+}
