@@ -1,0 +1,19 @@
+{
+  "observed_at": "2026-10-28",
+  "method": "read-only catalog privilege checks; no customer data queried",
+  "checks": {
+    "anon_ingest_rpc": false,
+    "anon_sales_table": false,
+    "rls_enabled_tables": 21,
+    "anon_private_schema": false,
+    "rls_disabled_tables": 0,
+    "authenticated_sales_raw": false,
+    "authenticated_sales_sck": true,
+    "service_role_ingest_rpc": true,
+    "authenticated_ingest_rpc": false,
+    "service_role_private_schema": false,
+    "authenticated_private_schema": false,
+    "unsafe_public_definer_grants": 0,
+    "authenticated_tracking_fbclid": true
+  }
+}

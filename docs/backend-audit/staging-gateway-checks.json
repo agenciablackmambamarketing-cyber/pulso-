@@ -1,0 +1,73 @@
+{
+  "project_ref": "osgumasejgumqlnqxcvm",
+  "environment": "staging",
+  "checks": [
+    {
+      "check": "own_workspace_metrics",
+      "passed": true,
+      "http_status": 200
+    },
+    {
+      "check": "cross_tenant_metrics_denied",
+      "passed": true,
+      "http_status": 403
+    },
+    {
+      "check": "cross_tenant_workspace_hidden",
+      "passed": true,
+      "http_status": 200
+    },
+    {
+      "check": "sales_sensitive_columns_denied",
+      "passed": true,
+      "http_status": 403
+    },
+    {
+      "check": "visitor_identifiers_denied",
+      "passed": true,
+      "http_status": 403
+    },
+    {
+      "check": "anonymous_sales_denied",
+      "passed": true,
+      "http_status": 401
+    },
+    {
+      "check": "service_only_rpc_denied",
+      "passed": true,
+      "http_status": 403
+    },
+    {
+      "check": "owner_site_config_allowed",
+      "passed": true,
+      "http_status": 200
+    },
+    {
+      "check": "cross_tenant_site_config_denied",
+      "passed": true,
+      "http_status": 400
+    },
+    {
+      "check": "webhook_missing_hottok_denied",
+      "passed": true,
+      "http_status": 401
+    },
+    {
+      "check": "worker_missing_secret_denied",
+      "passed": true,
+      "http_status": 401
+    },
+    {
+      "check": "collector_without_secrets_blocked",
+      "passed": true,
+      "http_status": 503
+    }
+  ],
+  "fixture_cleanup": {
+    "synthetic_users_removed": true,
+    "synthetic_workspaces_removed": true,
+    "remaining_workspaces": 0,
+    "remaining_sales": 0
+  },
+  "external_conversion_sent": false
+}

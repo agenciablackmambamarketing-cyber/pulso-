@@ -1,0 +1,30 @@
+{
+  "functions": [
+    {
+      "id": "c849c630-0d46-4574-bb7b-4a71e5ce9927",
+      "slug": "hotmart-webhook",
+      "name": "hotmart-webhook",
+      "status": "ACTIVE",
+      "version": 1,
+      "created_at": 1792899013385,
+      "updated_at": 1792899013385,
+      "verify_jwt": false,
+      "import_map": false,
+      "entrypoint_path": "file:///tmp/user_fn_nlrhtioxsbncpluchfcz_c849c630-0d46-4574-bb7b-4a71e5ce9927_1/source/index.ts",
+      "ezbr_sha256": "ba8e8e031d8cacf77e859f93d60f0b75715ffb4d1b6f6dfb2b98cbaf6265582c"
+    },
+    {
+      "id": "491ed8f5-1be8-4a24-8075-733249cc72ec",
+      "slug": "hotmart-connect",
+      "name": "hotmart-connect",
+      "status": "ACTIVE",
+      "version": 2,
+      "created_at": 1792899030720,
+      "updated_at": 1792899199001,
+      "verify_jwt": false,
+      "import_map": false,
+      "entrypoint_path": "file:///tmp/user_fn_nlrhtioxsbncpluchfcz_491ed8f5-1be8-4a24-8075-733249cc72ec_2/source/index.ts",
+      "ezbr_sha256": "1cf4ab6262ded9104548f5bffca1cc44c5de9acbb83996f7f522b7f8b695b0ce"
+    }
+  ]
+}

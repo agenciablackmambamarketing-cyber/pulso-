@@ -15,7 +15,13 @@ node_modules/
 *.log
 *.sqlite
 *.db
+supabase/.temp/
+supabase/.branches/
+coverage/
 # Deployment artifacts
 *.zip
 dist/
 build/
+
+# Generated environment-specific public dashboard configuration
+dashboard/config.json

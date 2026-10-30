@@ -1,0 +1,152 @@
+[
+  {
+    "schema": "public",
+    "table_name": "sales",
+    "column_name": "buyer_country",
+    "acl": "{authenticated=r/postgres}"
+  },
+  {
+    "schema": "public",
+    "table_name": "sales",
+    "column_name": "created_at",
+    "acl": "{authenticated=r/postgres}"
+  },
+  {
+    "schema": "public",
+    "table_name": "sales",
+    "column_name": "currency",
+    "acl": "{authenticated=r/postgres}"
+  },
+  {
+    "schema": "public",
+    "table_name": "sales",
+    "column_name": "external_transaction_id",
+    "acl": "{authenticated=r/postgres}"
+  },
+  {
+    "schema": "public",
+    "table_name": "sales",
+    "column_name": "gross_amount",
+    "acl": "{authenticated=r/postgres}"
+  },
+  {
+    "schema": "public",
+    "table_name": "sales",
+    "column_name": "id",
+    "acl": "{authenticated=r/postgres}"
+  },
+  {
+    "schema": "public",
+    "table_name": "sales",
+    "column_name": "last_event_at",
+    "acl": "{authenticated=r/postgres}"
+  },
+  {
+    "schema": "public",
+    "table_name": "sales",
+    "column_name": "net_amount",
+    "acl": "{authenticated=r/postgres}"
+  },
+  {
+    "schema": "public",
+    "table_name": "sales",
+    "column_name": "net_amount_verified",
+    "acl": "{authenticated=r/postgres}"
+  },
+  {
+    "schema": "public",
+    "table_name": "sales",
+    "column_name": "order_bump_parent",
+    "acl": "{authenticated=r/postgres}"
+  },
+  {
+    "schema": "public",
+    "table_name": "sales",
+    "column_name": "payment_type",
+    "acl": "{authenticated=r/postgres}"
+  },
+  {
+    "schema": "public",
+    "table_name": "sales",
+    "column_name": "product_id",
+    "acl": "{authenticated=r/postgres}"
+  },
+  {
+    "schema": "public",
+    "table_name": "sales",
+    "column_name": "product_name",
+    "acl": "{authenticated=r/postgres}"
+  },
+  {
+    "schema": "public",
+    "table_name": "sales",
+    "column_name": "provider",
+    "acl": "{authenticated=r/postgres}"
+  },
+  {
+    "schema": "public",
+    "table_name": "sales",
+    "column_name": "purchased_at",
+    "acl": "{authenticated=r/postgres}"
+  },
+  {
+    "schema": "public",
+    "table_name": "sales",
+    "column_name": "sck",
+    "acl": "{authenticated=r/postgres}"
+  },
+  {
+    "schema": "public",
+    "table_name": "sales",
+    "column_name": "settlement_currency",
+    "acl": "{authenticated=r/postgres}"
+  },
+  {
+    "schema": "public",
+    "table_name": "sales",
+    "column_name": "src",
+    "acl": "{authenticated=r/postgres}"
+  },
+  {
+    "schema": "public",
+    "table_name": "sales",
+    "column_name": "status",
+    "acl": "{authenticated=r/postgres}"
+  },
+  {
+    "schema": "public",
+    "table_name": "sales",
+    "column_name": "utm_campaign",
+    "acl": "{authenticated=r/postgres}"
+  },
+  {
+    "schema": "public",
+    "table_name": "sales",
+    "column_name": "utm_content",
+    "acl": "{authenticated=r/postgres}"
+  },
+  {
+    "schema": "public",
+    "table_name": "sales",
+    "column_name": "utm_medium",
+    "acl": "{authenticated=r/postgres}"
+  },
+  {
+    "schema": "public",
+    "table_name": "sales",
+    "column_name": "utm_source",
+    "acl": "{authenticated=r/postgres}"
+  },
+  {
+    "schema": "public",
+    "table_name": "sales",
+    "column_name": "workspace_id",
+    "acl": "{authenticated=r/postgres}"
+  },
+  {
+    "schema": "public",
+    "table_name": "sales",
+    "column_name": "xcod",
+    "acl": "{authenticated=r/postgres}"
+  }
+]

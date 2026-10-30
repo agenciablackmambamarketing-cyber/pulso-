@@ -1,0 +1,75 @@
+{
+  "date": "2026-10-30",
+  "environment": "isolated_staging",
+  "supabase_project_ref": "osgumasejgumqlnqxcvm",
+  "application_source_commit": "9c5e3b4782c1b1ee69251a4ee6a5df96ebb790a7",
+  "migration": {
+    "source_file": "20261029124537_pulso_meta_ads_read_cache.sql",
+    "registered_version": "20261030071853",
+    "name": "pulso_meta_ads_read_cache",
+    "applied_once": true,
+    "previous_request_state_error_resolved": true,
+    "previous_migrations_replayed": false
+  },
+  "edge_function": {
+    "name": "meta-ads",
+    "status": "ACTIVE",
+    "version": 1,
+    "authentication": "handler_getUser_and_workspace_admin",
+    "sha256": "a436b2c17c09284685aa5750cb358ae17c0bfe1a5529cbd23e796fea7ecbc5ba"
+  },
+  "site": {
+    "project_id": "appgprj_6ae1b60109e48191bd16eb81f7013d1e",
+    "source_commit": "cfa6e5ec4293d28b45ac9d22a33af6dda0921736",
+    "version": 6,
+    "deployment_id": "appgdep_6ae445c5ce6c819193dc747d8066eaf6",
+    "status": "succeeded",
+    "audience": "owner_only_preserved",
+    "http_files_verified": 7,
+    "http_file_status": 200,
+    "files_match_pushed_source": true
+  },
+  "hosted_sql_smoke": {
+    "result": "passed",
+    "synthetic_only": true,
+    "rollback_completed": true,
+    "remaining_synthetic_workspaces": 0,
+    "positive_media_roi_percent": 200,
+    "zero_media_roi_percent": 0,
+    "negative_media_roi_percent": -100,
+    "zero_spend_roi_null": true,
+    "incomplete_coverage_spend_and_roi_null": true,
+    "multiple_sales_sources_aggregated": true,
+    "reversals_excluded": true,
+    "paused_campaign_spend_included": true,
+    "cross_tenant_access_denied": true,
+    "anonymous_access_denied": true,
+    "client_credential_access_denied": true,
+    "client_privileged_mutations_denied": true,
+    "public_metrics_wrapper_invoker": true,
+    "all_ads_tables_rls_enabled": true,
+    "test_script_correction": "RLS audit restricted to table relkinds; initial index false positive rolled back"
+  },
+  "http_function_checks": {
+    "allowed_preflight": 204,
+    "no_login": 401,
+    "invalid_bearer": 401,
+    "wrong_origin": 403
+  },
+  "observed_after_cleanup": {
+    "connected_ads_accounts": 0,
+    "saved_ads_credentials": 0,
+    "capi_destinations": 0
+  },
+  "code_ci": {
+    "commit": "9c5e3b4782c1b1ee69251a4ee6a5df96ebb790a7",
+    "result": "success",
+    "url": "https://github.com/agenciablackmambamarketing-cyber/pulso-/actions/runs/40947972736"
+  },
+  "browser_visual_qa": "unavailable",
+  "real_meta_requests": 0,
+  "real_conversions_sent": 0,
+  "external_account_validation": "pending_protected_form_connection",
+  "official_hotmart_and_meta_test_events": "pending",
+  "production_modified": false
+}

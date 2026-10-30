@@ -1,0 +1,20 @@
+# No production project link is stored here. Every deployment requires explicit --project-ref.
+project_id = "pulso-tracking-local"
+
+[functions.pulso-collect]
+verify_jwt = false # Public site collection; exact origin, consent, HMAC, schema, DB rate limits.
+
+[functions.hotmart-webhook]
+verify_jwt = false # Hotmart Hottok checked in backend; not a Supabase JWT.
+
+[functions.hotmart-connect]
+verify_jwt = false # auth.getUser + service-only owner/admin RPC in handler.
+
+[functions.meta-connect]
+verify_jwt = false # auth.getUser + service-only owner/admin RPC in handler.
+
+[functions.meta-worker]
+verify_jwt = false # Constant-time worker-secret authorization, never a public browser key.
+
+[functions.meta-ads]
+verify_jwt = false # Verified Auth user + owner/admin RPC; Graph reads only, no ad mutations.

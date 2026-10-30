@@ -1,0 +1,6 @@
+{
+  "environment": "staging",
+  "project_ref": "REPLACE_STAGING_PROJECT_REF",
+  "supabase_url": "https://REPLACE_STAGING_PROJECT_REF.supabase.co",
+  "publishable_key": "sb_publishable_REPLACE_WITH_STAGING_PUBLIC_KEY"
+}

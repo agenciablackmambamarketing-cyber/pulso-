@@ -1,0 +1,52 @@
+{
+  "migrations": [
+    {
+      "version": "20261025032908",
+      "name": "pulso_hotmart_tracking_foundation"
+    },
+    {
+      "version": "20261025032954",
+      "name": "pulso_hotmart_secure_ingestion_functions"
+    },
+    {
+      "version": "20261025033213",
+      "name": "hotmart_pgcrypto_schema_search_path"
+    },
+    {
+      "version": "20261025033359",
+      "name": "hotmart_connection_status_tracking"
+    },
+    {
+      "version": "20261025160434",
+      "name": "pulso_least_privilege_taboola_ready"
+    },
+    {
+      "version": "20261025160634",
+      "name": "enforce_pulso_tenant_references"
+    },
+    {
+      "version": "20261025160738",
+      "name": "private_credential_tables_defense_in_depth"
+    },
+    {
+      "version": "20261025161054",
+      "name": "taboola_tracking_click_ids"
+    },
+    {
+      "version": "20261025161843",
+      "name": "block_pulso_raw_sales_payload_from_dashboard"
+    },
+    {
+      "version": "20261025161923",
+      "name": "conversion_destinations_per_tenant"
+    },
+    {
+      "version": "20261025161957",
+      "name": "private_pixel_matching_and_consent_guarded_outbox"
+    },
+    {
+      "version": "20261025162031",
+      "name": "enforce_pixel_provider_and_hashed_identifiers"
+    }
+  ]
+}
