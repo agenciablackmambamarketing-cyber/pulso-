@@ -1,4 +1,4 @@
-# Staging — histórico e estado em 29/10/2026
+# Staging — histórico e estado em 30/10/2026
 
 ## Atualização — campanhas, gastos e ROI de mídia
 
@@ -6,7 +6,11 @@ Implementação concluída na branch: leitura server-side Meta Ads, credenciais 
 
 Validação local nesta revisão:146 testes Node e60 testes PostgreSQL passaram; Deno2.9.6 validou seis wrappers. As respostas Graph são simuladas: nenhuma conta Meta real foi consultada e nenhuma conversão foi enviada.
 
-**Publicação desta atualização bloqueada:** `apply_migration` retornou `INVALID_ARGUMENT / Invalid or expired requestState` em duas tentativas. A consulta posterior confirmou ausência de `meta_ads_accounts` e `pulso_ads_metrics`; o histórico permaneceu com sete entradas. Portanto a migração nova NÃO foi aplicada, `meta-ads` NÃO foi publicado e o painel hospedado NÃO foi substituído pela versão de ROI. O staging privado existente e a página original Netlify foram preservados. Repetir o release somente após restabelecer a ferramenta, conferindo catálogo/histórico antes de qualquer tentativa. Isso é uma falha da chamada da ferramenta, sem evidência de rejeição do SQL pelo PostgreSQL.
+**Publicado no staging em30/10/2026:** o erro anterior da ferramenta foi resolvido. Após conferir catálogo e histórico, o incremento foi aplicado uma vez como `20261030071853_pulso_meta_ads_read_cache`; não houve replay do baseline ou das migrações antigas. `meta-ads` está ACTIVE v1 e o painel privado está na versão6, source `cfa6e5ec4293d28b45ac9d22a33af6dda0921736`, com código funcional da branch `9c5e3b4`. A origem permanece restrita ao proprietário; produção e Netlify original não foram alterados.
+
+O teste transacional no PostgreSQL hospedado confirmou ROI+200%/0%/−100%, gasto zero e cobertura incompleta como indisponíveis, receita de duas fontes, reversões excluídas, gasto pausado incluído, isolamento entre tenants e negação de credenciais privadas/mutações privilegiadas. Rollback integral: zero workspaces de teste remanescentes. HTTP `meta-ads`: preflight204, sem login401, bearer inválido401, origem errada403. Sete arquivos hospedados retornaram200 e SHA idêntico ao source enviado, incluindo a cópia de teste preservada. Não houve QA visual/autenticado em navegador; ferramenta indisponível. Evidência e SQL reexecutável em `backend-audit/staging-ads-release-2026-10-30.json` e `backend-audit/staging-ads-smoke-2026-10-30.sql`.
+
+O security advisor manteve dois avisos anteriores (guarda de `configure_tracking_site` e proteção de senhas vazadas desativada), sem novo aviso de definer público. As quatro tabelas privadas novas têm RLS sem policies, deny-all intencional, e nenhuma permissão de leitura de credenciais para clientes. A CI do código `9c5e3b4` passou: https://github.com/agenciablackmambamarketing-cyber/pulso-/actions/runs/40947972736 . A evidência de29/10 preserva o bloqueio histórico daquele dia.
 
 Permanece pendente conectar uma conta de anúncios com `ads_read` pelo campo protegido e comparar dados reais no mesmo fuso/moeda/período. O teste oficial Hotmart depende de acesso autenticado à conta; Test Events CAPI e scheduler também permanecem pendentes. Não declarar retorno real a partir dos testes locais.
 

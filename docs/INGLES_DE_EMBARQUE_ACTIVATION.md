@@ -18,8 +18,8 @@
 - [ ] Testar token inválido, erro transitório, retry, revogação, reembolso/chargeback e aprovação atrasada.
 - [ ] Confirmar dashboard sem PII, por moeda e workspace; aceitação da API não é atribuição de anúncio.
 - [ ] Agendar worker/retention, validar proxy antes de habilitar IP e revisar aviso LGPD.
-- [ ] Restabelecer publicação de migrações: ferramenta retornou `Invalid or expired requestState`; incremento Meta Ads/ROI continua somente na branch.
-- [ ] Aplicar incremento Meta Ads uma vez, publicar `meta-ads` e atualizar painel privado; conferir RLS/grants.
+- [x] Restabelecer publicação de migrações; erro anterior resolvido e catálogo/histórico conferidos em30/10/2026.
+- [x] Aplicar incremento Meta Ads uma vez, publicar `meta-ads` e atualizar painel privado; RLS/grants e rollback das fixtures conferidos.
 - [ ] Conectar conta autorizada com `ads_read`; comparar gastos, campanhas ativas/pausadas e ROI no mesmo período, fuso e moeda. Validar sinais verde/vermelho sem usar dados demonstrativos como reais.
 
 ## Produção — não ativada

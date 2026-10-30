@@ -18,6 +18,8 @@ O resumo inclui o gasto de todas as campanhas no período, inclusive pausadas. A
 
 ## Conectar em staging
 
+Estado em30/10/2026: incremento, função e painel privado já publicados no staging `osgumasejgumqlnqxcvm`. As etapas1–3 abaixo já foram concluídas nesse projeto; não reaplicar. Ainda não há conta de anúncios conectada. Começar pelo cadastro protegido da etapa4.
+
 1. Aplicar uma única vez `20261029124537_pulso_meta_ads_read_cache.sql` depois dos incrementos anteriores. Não reaplicar baseline ou migrações antigas em banco existente.
 2. Publicar `meta-ads` com `supabase/config.toml`. O endpoint valida a sessão via `getUser`, origem exata e papel owner/admin no backend; membros podem ler apenas agregados do próprio workspace.
 3. Configurar o conjunto completo `PULSO_ADMIN_ORIGINS`, `PULSO_META_CREDENTIAL_KEY_V1`, `META_GRAPH_VERSION` no backend, ou usar o escopo Vault `meta_connect` já provisionado no staging. Não misturar configuração parcial. A chave AES é compartilhada pelo runtime, com contexto criptográfico distinto para CAPI e anúncios; as credenciais são independentes.

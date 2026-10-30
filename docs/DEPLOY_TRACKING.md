@@ -2,7 +2,7 @@
 
 ## Estado desta entrega
 
-Nenhum SQL ou função desta branch foi aplicado em produção. O staging osgumasejgumqlnqxcvm possui baseline e incrementos de tracking/Vault/funil; cinco Edge Functions estão ativas e o runtime interno foi provisionado via Vault. A atualização de Meta Ads/ROI está implementada e testada localmente, com aplicação hospedada bloqueada por erro da ferramenta de migração. Ver STAGING_STATUS.md para o estado verificado. A CAPI nova é **somente de teste**, inclusive no backend: `pulso_meta_save` recusa modo diferente de `test` e o worker recusa jobs de produção. Um release de produção exigirá implementação/revisão do gate de ativação e autorização separada; não há uma variável que habilite envios reais por acidente.
+Nenhum SQL ou função desta branch foi aplicado em produção. O staging osgumasejgumqlnqxcvm possui baseline e incrementos de tracking/Vault/funil; seis Edge Functions estão ativas e o runtime interno foi provisionado via Vault. A atualização de Meta Ads/ROI foi aplicada e publicada somente no staging em30/10/2026, com testes transacionais de isolamento/cálculos e proteção HTTP. O erro anterior da ferramenta de migração foi resolvido. Ver STAGING_STATUS.md para o estado verificado. A CAPI nova é **somente de teste**, inclusive no backend: `pulso_meta_save` recusa modo diferente de `test` e o worker recusa jobs de produção. Um release de produção exigirá implementação/revisão do gate de ativação e autorização separada; não há uma variável que habilite envios reais por acidente.
 
 ## Banco e histórico
 
