@@ -1,0 +1,3 @@
+# A separate CLI workdir for new, isolated Pulso environments.
+# Link an explicitly verified empty project before using Supabase CLI commands.
+project_id = "pulso-reconstrucao-local"
