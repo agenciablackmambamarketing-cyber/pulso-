@@ -52,7 +52,7 @@
         <label>Senha<input id="password" type="password" minlength="8" class="input" placeholder="Mínimo 8 caracteres" autocomplete="current-password" required></label>
         <button class="btn primary" id="authSubmit" type="submit">Entrar</button>
       </form>
-      <p class="hint"><a href="#" id="authMode">Criar minha conta</a></p>
+      <p class="hint"><a href="#" id="authMode">Criar minha conta</a> · <a href="#" id="resendConfirmation">Reenviar confirmação</a></p>
       <div id="authFeedback" class="feedback hidden"></div>
     </div>
   </div>
@@ -124,11 +124,18 @@
     $('refresh').onclick=()=>refresh();
     $('logout').onclick=async()=>{await supabase.auth.signOut();state.user=null;renderAuth()};
     $('authMode').onclick=e=>{e.preventDefault();state.registered=!state.registered;$('authTitle').textContent=state.registered?'Criar conta':'Entrar na operação';$('authSubmit').textContent=state.registered?'Criar conta':'Entrar';$('authMode').textContent=state.registered?'Já tenho conta':'Criar minha conta';$('authFeedback').classList.add('hidden')};
+    $('resendConfirmation').onclick=async e=>{e.preventDefault();const email=$('email').value.trim();
+      if(!email)return show('authFeedback','Informe seu e-mail no campo acima para reenviar a confirmação.');
+      const link=$('resendConfirmation');link.style.pointerEvents='none';link.setAttribute('aria-disabled','true');
+      try{const {error}=await supabase.auth.resend({type:'signup',email,options:{emailRedirectTo:window.location.origin+'/'}});
+        if(error)throw error;show('authFeedback','Solicitação de reenvio recebida. Confira a caixa de entrada e o spam. Se não chegar, o envio SMTP precisa ser configurado no Supabase.',true);
+      }catch(err){show('authFeedback',errorMsg(err))}
+      finally{link.style.pointerEvents='';link.removeAttribute('aria-disabled')}};
     $('authForm').onsubmit=async e=>{e.preventDefault();$('authSubmit').disabled=true;const email=$('email').value.trim();const password=$('password').value;
-       const result=state.registered?await supabase.auth.signUp({email,password}):await supabase.auth.signInWithPassword({email,password});
+       const result=state.registered?await supabase.auth.signUp({email,password,options:{emailRedirectTo:window.location.origin+'/'}}):await supabase.auth.signInWithPassword({email,password});
        $('authSubmit').disabled=false;
        if(result.error)return show('authFeedback',errorMsg(result.error));
-       if(state.registered&&!result.data.session)return show('authFeedback','Conta criada. Confirme o e-mail antes de entrar.',true);
+       if(state.registered&&!result.data.session)return show('authFeedback','Conta criada. Confira a caixa de entrada e o spam. Se o e-mail não chegar, use Reenviar confirmação.',true);
        await boot();};
     $('workspaceForm').onsubmit=async e=>{e.preventDefault();const name=$('workspaceName').value.trim();if(!name)return;
        const {error}=await supabase.from('workspaces').insert({name,owner_id:state.user.id});
