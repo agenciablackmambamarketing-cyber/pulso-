@@ -61,6 +61,7 @@
       <nav class="nav" aria-label="Navegação">
         <button data-tab="overview" class="active">▦ &nbsp;Visão geral</button>
         <button data-tab="sales">◇ &nbsp;Vendas</button>
+        <button data-tab="accounts">▤ &nbsp;Contas Meta</button>
         <button data-tab="integrations">⛓ &nbsp;Integrações</button>
       </nav>
       <div class="grow"></div><small>PROJETO INDEPENDENTE DA AGÊNCIA</small>
@@ -90,6 +91,11 @@
             <div class="card"><div class="cardheader"><div><h2>Conexões da operação</h2><p class="sub">Integrações reais verificadas</p></div></div><div id="integrationStatus"></div><button data-goto="integrations" class="btn" style="margin-top:17px">Configurar integrações</button></div></div>
         </div>
         <div id="salesTab" class="hidden"><div class="card"><div class="cardheader"><div><h2>Vendas e pedidos</h2><p class="sub">Valores brutos, status e origem. Os valores líquidos ainda exigem reconciliação.</p></div></div><div id="allSales" class="table-scroll"></div></div></div>
+        <div id="accountsTab" class="hidden"><div class="card">
+          <div class="cardheader"><div><h2>Contas Meta Ads cadastradas</h2><p class="sub">Contas identificadas pelo Windsor.ai e vinculadas a este workspace.</p></div><span id="accountsTotal" class="pill">—</span></div>
+          <div class="notice" style="margin-bottom:18px">O registro das contas não autentica a Meta diretamente. Importação de métricas, verificação de entrega e atualização automática ainda dependem de integração e sincronização verificadas.</div>
+          <div id="accountsTable" class="table-scroll"><div class="empty">Consultando contas cadastradas...</div></div>
+        </div></div>
         <div id="integrationsTab" class="hidden"><div class="cols"><div class="card"><h2>Conectar Hotmart</h2><p class="sub">Cadastre o Hottok oficial da sua conta; o token será armazenado apenas como hash no backend, nunca na página.</p>
           <form id="hotmartForm" class="form" style="margin-top:18px"><label>Nome da conexão<input class="input" id="hotmartLabel" placeholder="Hotmart da agência" value="Hotmart da agência"></label>
             <label>Hottok da Hotmart<input class="input" id="hotmartHottok" type="password" autocomplete="off" placeholder="Cole aqui no Pulso, não no chat" required></label>
@@ -108,14 +114,14 @@
     const KEY='sb_publishable_DukaaKxh0BHDykiVdKvgYw_EH5y9kf1';
     const supabase=createClient(URL,KEY);
     const $=id=>document.getElementById(id);
-    const state={user:null,workspaces:[],workspace:null,period:0,currency:'BRL',sales:[],integrations:[],events:[],tab:'overview',registered:false};
+    const state={user:null,workspaces:[],workspace:null,period:0,currency:'BRL',sales:[],integrations:[],events:[],accounts:[],tab:'overview',registered:false};
     const money=(amount,curr)=>new Intl.NumberFormat('pt-BR',{style:'currency',currency:curr||'BRL'}).format(Number(amount)||0);
     const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
     const show=(id,msg,ok=false)=>{const el=$(id);el.classList.remove('hidden');el.classList.toggle('ok',ok);el.textContent=msg};
     const errorMsg=e=>e?.message||String(e);
-    const tab=(name)=>{state.tab=name;for(const n of ['overview','sales','integrations'])$(n+'Tab').classList.toggle('hidden',name!==n);
+    const tab=(name)=>{state.tab=name;for(const n of ['overview','sales','accounts','integrations'])$(n+'Tab').classList.toggle('hidden',name!==n);
        document.querySelectorAll('[data-tab]').forEach(b=>b.classList.toggle('active',b.dataset.tab===name));
-       $('pageTitle').textContent=({overview:'Visão geral',sales:'Vendas',integrations:'Integrações'})[name];};
+       $('pageTitle').textContent=({overview:'Visão geral',sales:'Vendas',accounts:'Contas Meta',integrations:'Integrações'})[name];};
     document.querySelectorAll('[data-tab]').forEach(b=>b.onclick=()=>tab(b.dataset.tab));
     document.querySelectorAll('[data-goto]').forEach(b=>b.onclick=()=>tab(b.dataset.goto));
     document.querySelectorAll('[data-period]').forEach(b=>b.onclick=()=>{state.period=Number(b.dataset.period);document.querySelectorAll('[data-period]').forEach(x=>x.classList.toggle('active',x===b));refresh();});
@@ -162,13 +168,14 @@
     async function allRows(table,columns,apply){const result=[];let from=0;while(from<10000){let q=supabase.from(table).select(columns).eq('workspace_id',state.workspace.id).range(from,from+999);q=apply(q);const {data,error}=await q;if(error)throw error;result.push(...(data||[]));if(!data||data.length<1000)break;from+=1000;}return result;}
     async function refresh(){if(!state.workspace)return;
       try{const from=sinceDate().toISOString();
-       const [sales,integrations,events]=await Promise.all([
+       const [sales,integrations,events,accounts]=await Promise.all([
         allRows('sales','id,external_transaction_id,product_name,status,currency,gross_amount,net_amount,net_amount_verified,purchased_at,src,sck,xcod',q=>q.gte('purchased_at',from).order('purchased_at',{ascending:false})),
         supabase.from('integrations').select('provider,status,provider_user_name,last_sync_at').eq('workspace_id',state.workspace.id),
-        supabase.from('funnel_events').select('event_name,occurred_at').eq('workspace_id',state.workspace.id).gte('occurred_at',from).limit(1000)
+        supabase.from('funnel_events').select('event_name,occurred_at').eq('workspace_id',state.workspace.id).gte('occurred_at',from).limit(1000),
+        supabase.from('ad_accounts').select('id,name,external_account_id,selected,is_active').eq('workspace_id',state.workspace.id).eq('provider','meta').order('name')
        ]);
-       if(integrations.error)throw integrations.error;if(events.error)throw events.error;
-       state.sales=sales;state.integrations=integrations.data||[];state.events=events.data||[];
+       if(integrations.error)throw integrations.error;if(events.error)throw events.error;if(accounts.error)throw accounts.error;
+       state.sales=sales;state.integrations=integrations.data||[];state.events=events.data||[];state.accounts=accounts.data||[];
        const currencies=[...new Set(state.sales.map(s=>s.currency).filter(Boolean))];
        if(!currencies.includes(state.currency))state.currency=currencies[0]||state.workspace.currency||'BRL';
        $('currencySelect').innerHTML=[...new Set([...currencies,state.currency])].map(c=>'<option>'+esc(c)+'</option>').join('');$('currencySelect').value=state.currency;
@@ -177,7 +184,15 @@
     function salesTable(rows){if(!rows.length)return '<div class="empty">Nenhuma venda registrada neste período</div>';
        return '<table><thead><tr><th>Pedido</th><th>Produto</th><th>Status</th><th>Origem</th><th>Bruto</th></tr></thead><tbody>'+rows.map(s=>
        '<tr><td>'+esc(s.external_transaction_id)+'</td><td>'+esc(s.product_name||'—')+'</td><td>'+esc(s.status||'—')+'</td><td>'+esc(s.src||s.sck||s.xcod||'Não identificada')+'</td><td>'+esc(money(s.gross_amount,s.currency))+'</td></tr>').join('')+'</tbody></table>'}
-    function render(){const all=state.sales;const rows=all.filter(s=>s.currency===state.currency);
+    function renderAccounts(){
+      const rows=state.accounts||[];
+      $('accountsTotal').textContent=rows.length+' cadastrada'+(rows.length===1?'':'s');
+      if(!rows.length){$('accountsTable').innerHTML='<div class="empty">Nenhuma conta Meta Ads cadastrada neste workspace.</div>';return;}
+      const sorted=[...rows].sort((a,b)=>Number(b.selected)-Number(a.selected)||String(a.name).localeCompare(String(b.name),'pt-BR'));
+      $('accountsTable').innerHTML='<table><thead><tr><th>Conta</th><th>ID Meta</th><th>Monitoramento</th><th>Integração</th></tr></thead><tbody>'+sorted.map(a=>
+       '<tr><td>'+esc(a.name)+'</td><td><span class="code">'+esc(a.external_account_id)+'</span></td><td>'+esc(a.selected?'Prioritária':'Não selecionada')+'</td><td>Sincronização pendente</td></tr>').join('')+'</tbody></table>';
+    }
+    function render(){renderAccounts();const all=state.sales;const rows=all.filter(s=>s.currency===state.currency);
       const active=rows.filter(s=>['APPROVED','COMPLETE'].includes(s.status));const reversed=rows.filter(s=>['REFUNDED','CHARGEBACK'].includes(s.status));
       $('revenue').textContent=money(active.reduce((sum,s)=>sum+Number(s.gross_amount),0),state.currency);
       $('revenueHelp').textContent=active.length+' confirmadas • '+reversed.length+' reembolsadas/chargebacks';
